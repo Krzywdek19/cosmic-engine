@@ -52,4 +52,35 @@ class PhysicsEngineTest {
 
         assertThrows(IllegalArgumentException.class, () -> physicsEngine.update(body, 0));
     }
+
+    @Test
+    void shouldApplyForceToBody() {
+        Body body = new Body(
+                2,
+                new Vector2D(0, 0),
+                new Vector2D(0, 0),
+                new Vector2D(0, 0)
+        );
+
+        physicsEngine.applyForce(body, new Vector2D(10, 0));
+
+        assertEquals(new Vector2D(5, 0), body.getAcceleration());
+    }
+
+    @Test
+    void shouldMoveBodyAfterApplyingForce() {
+        Body body = new Body(
+                2,
+                new Vector2D(0, 0),
+                new Vector2D(0, 0),
+                new Vector2D(0, 0)
+        );
+
+        physicsEngine.applyForce(body, new Vector2D(10, 0));
+        physicsEngine.update(body, 2);
+
+        assertEquals(new Vector2D(5, 0), body.getAcceleration());
+        assertEquals(new Vector2D(10, 0), body.getPosition());
+        assertEquals(new Vector2D(10, 0), body.getVelocity());
+    }
 }

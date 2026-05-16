@@ -24,4 +24,9 @@ public class PhysicsEngine {
         body.setPosition(newPosition);
         body.setVelocity(newVelocity);
     }
+
+    public void applyForce(Body body, Vector2D force){
+        Vector2D acceleration = force.divide(body.getMass());
+        body.setAcceleration(acceleration);
+    }
 }
