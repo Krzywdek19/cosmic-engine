@@ -1,10 +1,11 @@
 package pl.exceptionhandled.cosmicengine.simulation;
 
+import org.springframework.stereotype.Component;
 import pl.exceptionhandled.cosmicengine.physics.engine.PhysicsEngine;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 
+@Component
 public class SimulationLoop {
-
     private final PhysicsEngine physicsEngine;
 
     public SimulationLoop(PhysicsEngine physicsEngine) {

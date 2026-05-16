@@ -1,10 +1,11 @@
 package pl.exceptionhandled.cosmicengine.physics.engine;
 
+import org.springframework.stereotype.Component;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 
+@Component
 public class PhysicsEngine {
-
     public void update(Body body, double deltaTime) {
         if (deltaTime <= 0) {
             throw new IllegalArgumentException("Delta time must be greater than zero");
