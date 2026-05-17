@@ -30,3 +30,24 @@ export type SimpleMotionTrajectoryResponse = {
   deltaTime: number;
   frames: SimulationFrame[];
 };
+
+export type BodyConfig = {
+  id: string;
+  name: string;
+  mass: number;
+  position: Vector2D;
+  velocity: Vector2D;
+  force: Vector2D;
+};
+
+export type SimulationSettings = {
+  deltaTime: number;
+  steps: number;
+};
+
+export type BodySimulationResult = {
+  id: string;
+  name: string;
+  response: SimpleMotionTrajectoryResponse;
+  frames: SimulationFrame[];
+};
