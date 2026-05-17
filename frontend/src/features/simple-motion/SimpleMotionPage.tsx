@@ -1,4 +1,4 @@
-import { type CSSProperties, type FormEvent, useState } from "react";
+import { type FormEvent, useState } from "react";
 import { runSimpleMotionTrajectory } from "../../api/simulationApi";
 import type {
   BodyConfig,
@@ -47,7 +47,8 @@ export function SimpleMotionPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const selectedBody = bodies.find((body) => body.id === selectedBodyId) ?? bodies[0];
+  const selectedBody =
+    bodies.find((body) => body.id === selectedBodyId) ?? bodies[0];
 
   const selectedBodyIndex = selectedBody
     ? bodies.findIndex((body) => body.id === selectedBody.id)
@@ -84,8 +85,11 @@ export function SimpleMotionPage() {
 
       setResults(responses);
       setReplayKey((previous) => previous + 1);
-    } catch {
-      setError("Failed to run simulation.");
+    } catch (error) {
+      console.error(error);
+      setError(
+        error instanceof Error ? error.message : "Failed to run simulation."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -221,34 +225,47 @@ export function SimpleMotionPage() {
   }
 
   return (
-    <main style={pageStyle}>
-      <header style={headerStyle}>
-        <p style={eyebrowStyle}>Cosmic Engine / Stage 1</p>
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#1e293b_0,#020617_42%,#020617_100%)] p-6 font-sans text-slate-100 lg:p-10">
+      <header className="mb-8 max-w-6xl">
+        <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-sky-400">
+          Cosmic Engine / Stage 1
+        </p>
 
-        <h1 style={titleStyle}>Simple Motion Simulation</h1>
+        <h1 className="text-4xl font-extrabold tracking-tight text-slate-50 lg:text-5xl">
+          Simple Motion Simulation
+        </h1>
 
-        <p style={descriptionStyle}>
+        <p className="mt-4 max-w-3xl text-base leading-7 text-slate-400">
           Simulate independent material points using force, mass, acceleration,
           velocity and position.
         </p>
       </header>
 
-      <section style={layoutStyle}>
-        <form onSubmit={handleSubmit} style={panelStyle}>
-          <div style={panelHeaderStyle}>
+      <section className="grid items-start gap-7 xl:grid-cols-[minmax(360px,440px)_minmax(0,1fr)]">
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/40"
+        >
+          <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h2 style={sectionTitleStyle}>Simulation input</h2>
-              <p style={mutedTextStyle}>
+              <h2 className="text-2xl font-bold text-slate-50">
+                Simulation input
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-slate-400">
                 Add one or more independent bodies and run the simulation.
               </p>
             </div>
 
-            <button type="button" onClick={addBody} style={secondaryButtonStyle}>
+            <button
+              type="button"
+              onClick={addBody}
+              className="rounded-full border border-slate-700 bg-slate-950 px-4 py-2.5 text-sm font-bold text-slate-200 transition hover:border-sky-400 hover:text-sky-300"
+            >
               Add body
             </button>
           </div>
 
-          <div style={settingsGridStyle}>
+          <div className="grid grid-cols-2 gap-3">
             <NumberInput
               label="Delta time"
               value={settings.deltaTime}
@@ -271,25 +288,21 @@ export function SimpleMotionPage() {
           />
 
           {selectedBody && (
-            <article key={selectedBody.id} style={bodyCardStyle}>
-              <div style={bodyHeaderStyle}>
+            <article className="rounded-3xl border border-slate-700/80 bg-slate-950/50 p-5">
+              <div className="mb-4 flex items-center justify-between gap-3">
                 <input
                   value={selectedBody.name}
                   onChange={(event) =>
                     updateBodyName(selectedBody.id, event.target.value)
                   }
-                  style={bodyNameInputStyle}
+                  className="w-full border-none bg-transparent text-lg font-extrabold text-slate-100 outline-none"
                 />
 
                 <button
                   type="button"
                   onClick={() => removeBody(selectedBody.id)}
                   disabled={bodies.length === 1}
-                  style={{
-                    ...dangerButtonStyle,
-                    opacity: bodies.length === 1 ? 0.45 : 1,
-                    cursor: bodies.length === 1 ? "not-allowed" : "pointer",
-                  }}
+                  className="rounded-full border border-red-900 bg-red-950 px-3 py-2 text-sm font-bold text-red-200 transition hover:border-red-700 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Remove
                 </button>
@@ -339,14 +352,18 @@ export function SimpleMotionPage() {
                 }
               />
 
-              <p style={bodyHintStyle}>
+              <p className="mt-3 text-xs text-slate-500">
                 Body #{selectedBodyIndex + 1} is calculated independently.
               </p>
             </article>
           )}
 
-          <div style={actionsStyle}>
-            <button type="submit" disabled={isLoading} style={primaryButtonStyle}>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="rounded-full bg-sky-400 px-5 py-3 font-extrabold text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-50"
+            >
               {isLoading ? "Running..." : "Run simulation"}
             </button>
 
@@ -354,34 +371,44 @@ export function SimpleMotionPage() {
               type="button"
               onClick={replaySimulation}
               disabled={results.length === 0}
-              style={{
-                ...secondaryButtonStyle,
-                opacity: results.length === 0 ? 0.45 : 1,
-                cursor: results.length === 0 ? "not-allowed" : "pointer",
-              }}
+              className="rounded-full border border-slate-700 bg-slate-950 px-4 py-3 font-bold text-slate-200 transition hover:border-sky-400 hover:text-sky-300 disabled:cursor-not-allowed disabled:opacity-40"
             >
               Replay
             </button>
 
-            <button type="button" onClick={clearResults} style={secondaryButtonStyle}>
+            <button
+              type="button"
+              onClick={clearResults}
+              className="rounded-full border border-slate-700 bg-slate-950 px-4 py-3 font-bold text-slate-200 transition hover:border-sky-400 hover:text-sky-300"
+            >
               Clear result
             </button>
 
-            <button type="button" onClick={resetBodies} style={secondaryButtonStyle}>
+            <button
+              type="button"
+              onClick={resetBodies}
+              className="rounded-full border border-slate-700 bg-slate-950 px-4 py-3 font-bold text-slate-200 transition hover:border-sky-400 hover:text-sky-300"
+            >
               Reset input
             </button>
           </div>
 
-          {error && <p style={errorTextStyle}>{error}</p>}
+          {error && (
+            <p className="mt-4 rounded-2xl border border-red-900 bg-red-950 px-4 py-3 text-sm text-red-200">
+              {error}
+            </p>
+          )}
         </form>
 
-        <section style={panelStyle}>
-          <div style={panelHeaderStyle}>
+        <section className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/40">
+          <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h2 style={sectionTitleStyle}>Visualization</h2>
-              <p style={mutedTextStyle}>
-                The canvas automatically fits all trajectories into view. You can
-                also zoom and move the viewport manually.
+              <h2 className="text-2xl font-bold text-slate-50">
+                Visualization
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-slate-400">
+                The canvas automatically fits all trajectories into view. You
+                can also zoom and move the viewport manually.
               </p>
             </div>
           </div>
@@ -389,10 +416,15 @@ export function SimpleMotionPage() {
           <SimpleMotionCanvas trajectories={results} replayKey={replayKey} />
 
           {results.length > 0 && (
-            <div style={resultsGridStyle}>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
               {results.map((result) => (
-                <article key={result.id} style={resultCardStyle}>
-                  <h3 style={resultTitleStyle}>{result.name}</h3>
+                <article
+                  key={result.id}
+                  className="rounded-3xl border border-slate-800 bg-slate-950 p-5"
+                >
+                  <h3 className="mb-4 text-lg font-bold text-slate-50">
+                    {result.name}
+                  </h3>
 
                   <Metric
                     label="Acceleration"
@@ -469,12 +501,16 @@ function BodySelector({
   onNext,
 }: BodySelectorProps) {
   return (
-    <div style={bodySelectorStyle}>
-      <button type="button" onClick={onPrevious} style={secondaryButtonStyle}>
+    <div className="my-5 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
+      <button
+        type="button"
+        onClick={onPrevious}
+        className="rounded-full border border-slate-700 bg-slate-950 px-4 py-2.5 font-bold text-slate-200 transition hover:border-sky-400 hover:text-sky-300"
+      >
         ←
       </button>
 
-      <div style={bodyTabsStyle}>
+      <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
         {bodies.map((body) => {
           const isSelected = body.id === selectedBodyId;
 
@@ -483,18 +519,12 @@ function BodySelector({
               key={body.id}
               type="button"
               onClick={() => onSelect(body.id)}
-              style={{
-                border: isSelected
-                  ? "1px solid #38bdf8"
-                  : "1px solid #334155",
-                borderRadius: "999px",
-                padding: "9px 14px",
-                color: isSelected ? "#020617" : "#e2e8f0",
-                background: isSelected ? "#38bdf8" : "#0f172a",
-                fontWeight: 800,
-                whiteSpace: "nowrap",
-                cursor: "pointer",
-              }}
+              className={cx(
+                "whitespace-nowrap rounded-full px-4 py-2.5 font-extrabold transition",
+                isSelected
+                  ? "bg-sky-400 text-slate-950"
+                  : "border border-slate-700 bg-slate-950 text-slate-200 hover:border-sky-400 hover:text-sky-300"
+              )}
             >
               {body.name}
             </button>
@@ -502,7 +532,11 @@ function BodySelector({
         })}
       </div>
 
-      <button type="button" onClick={onNext} style={secondaryButtonStyle}>
+      <button
+        type="button"
+        onClick={onNext}
+        className="rounded-full border border-slate-700 bg-slate-950 px-4 py-2.5 font-bold text-slate-200 transition hover:border-sky-400 hover:text-sky-300"
+      >
         →
       </button>
     </div>
@@ -517,14 +551,14 @@ type NumberInputProps = {
 
 function NumberInput({ label, value, onChange }: NumberInputProps) {
   return (
-    <label style={inputLabelStyle}>
+    <label className="mb-3 grid gap-1.5 text-sm font-semibold text-slate-300">
       <span>{label}</span>
       <input
         type="number"
         value={value}
         step="any"
         onChange={(event) => onChange(event.target.value)}
-        style={inputStyle}
+        className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-slate-50 outline-none transition focus:border-sky-400"
       />
     </label>
   );
@@ -547,9 +581,9 @@ function VectorInput({
 }: VectorInputProps) {
   return (
     <div>
-      <p style={smallTitleStyle}>{title}</p>
+      <p className="mb-2 mt-4 text-sm font-bold text-slate-200">{title}</p>
 
-      <div style={settingsGridStyle}>
+      <div className="grid grid-cols-2 gap-3">
         <NumberInput label="X" value={x} onChange={onXChange} />
         <NumberInput label="Y" value={y} onChange={onYChange} />
       </div>
@@ -565,234 +599,15 @@ type MetricProps = {
 
 function Metric({ label, x, y }: MetricProps) {
   return (
-    <p style={metricStyle}>
-      <span style={{ color: "#94a3b8" }}>{label}</span>
-      <strong>
+    <p className="my-3 grid gap-1">
+      <span className="text-sm text-slate-400">{label}</span>
+      <strong className="text-slate-100">
         ({x.toFixed(2)}, {y.toFixed(2)})
       </strong>
     </p>
   );
 }
 
-const pageStyle = {
-  minHeight: "100vh",
-  padding: "40px",
-  fontFamily: "Inter, system-ui, sans-serif",
-  color: "#e5e7eb",
-  background:
-    "radial-gradient(circle at top left, #1e293b 0, #020617 42%, #020617 100%)",
-} satisfies CSSProperties;
-
-const headerStyle = {
-  marginBottom: "32px",
-  maxWidth: "1100px",
-} satisfies CSSProperties;
-
-const eyebrowStyle = {
-  margin: "0 0 10px",
-  color: "#38bdf8",
-  fontWeight: 700,
-  letterSpacing: "0.08em",
-  textTransform: "uppercase",
-  fontSize: "13px",
-} satisfies CSSProperties;
-
-const titleStyle = {
-  margin: 0,
-  fontSize: "42px",
-  lineHeight: 1.1,
-} satisfies CSSProperties;
-
-const descriptionStyle = {
-  marginTop: "14px",
-  maxWidth: "760px",
-  color: "#94a3b8",
-  fontSize: "16px",
-  lineHeight: 1.7,
-} satisfies CSSProperties;
-
-const layoutStyle = {
-  display: "grid",
-  gridTemplateColumns: "minmax(360px, 440px) minmax(0, 1fr)",
-  gap: "28px",
-  alignItems: "start",
-} satisfies CSSProperties;
-
-const panelStyle = {
-  border: "1px solid #1e293b",
-  borderRadius: "28px",
-  padding: "24px",
-  background: "rgba(15, 23, 42, 0.78)",
-  boxShadow: "0 24px 80px rgba(2, 6, 23, 0.4)",
-} satisfies CSSProperties;
-
-const panelHeaderStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "flex-start",
-  gap: "16px",
-  marginBottom: "20px",
-} satisfies CSSProperties;
-
-const sectionTitleStyle = {
-  margin: 0,
-  fontSize: "22px",
-} satisfies CSSProperties;
-
-const mutedTextStyle = {
-  margin: "6px 0 0",
-  color: "#94a3b8",
-  fontSize: "14px",
-  lineHeight: 1.5,
-} satisfies CSSProperties;
-
-const settingsGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: "12px",
-} satisfies CSSProperties;
-
-const bodySelectorStyle = {
-  display: "grid",
-  gridTemplateColumns: "auto minmax(0, 1fr) auto",
-  gap: "10px",
-  alignItems: "center",
-  marginTop: "18px",
-  marginBottom: "18px",
-} satisfies CSSProperties;
-
-const bodyTabsStyle = {
-  display: "flex",
-  gap: "8px",
-  overflowX: "auto",
-  paddingBottom: "4px",
-  scrollbarWidth: "thin",
-} satisfies CSSProperties;
-
-const bodyCardStyle = {
-  border: "1px solid #243244",
-  borderRadius: "22px",
-  padding: "18px",
-  background: "rgba(2, 6, 23, 0.42)",
-} satisfies CSSProperties;
-
-const bodyHeaderStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  gap: "12px",
-  alignItems: "center",
-  marginBottom: "16px",
-} satisfies CSSProperties;
-
-const bodyNameInputStyle = {
-  width: "100%",
-  border: "none",
-  outline: "none",
-  color: "#e5e7eb",
-  background: "transparent",
-  fontSize: "18px",
-  fontWeight: 700,
-} satisfies CSSProperties;
-
-const inputLabelStyle = {
-  display: "grid",
-  gap: "6px",
-  marginBottom: "12px",
-  color: "#cbd5e1",
-  fontSize: "13px",
-  fontWeight: 600,
-} satisfies CSSProperties;
-
-const inputStyle = {
-  width: "100%",
-  boxSizing: "border-box",
-  border: "1px solid #334155",
-  borderRadius: "12px",
-  padding: "10px 12px",
-  color: "#f8fafc",
-  background: "#020617",
-  outline: "none",
-} satisfies CSSProperties;
-
-const smallTitleStyle = {
-  margin: "14px 0 10px",
-  color: "#e2e8f0",
-  fontWeight: 700,
-  fontSize: "14px",
-} satisfies CSSProperties;
-
-const bodyHintStyle = {
-  margin: "10px 0 0",
-  color: "#64748b",
-  fontSize: "12px",
-} satisfies CSSProperties;
-
-const actionsStyle = {
-  display: "flex",
-  gap: "10px",
-  flexWrap: "wrap",
-  marginTop: "24px",
-} satisfies CSSProperties;
-
-const primaryButtonStyle = {
-  border: "none",
-  borderRadius: "999px",
-  padding: "11px 18px",
-  color: "#020617",
-  background: "#38bdf8",
-  fontWeight: 800,
-  cursor: "pointer",
-} satisfies CSSProperties;
-
-const secondaryButtonStyle = {
-  border: "1px solid #334155",
-  borderRadius: "999px",
-  padding: "10px 16px",
-  color: "#e2e8f0",
-  background: "#0f172a",
-  fontWeight: 700,
-  cursor: "pointer",
-} satisfies CSSProperties;
-
-const dangerButtonStyle = {
-  border: "1px solid #7f1d1d",
-  borderRadius: "999px",
-  padding: "8px 12px",
-  color: "#fecaca",
-  background: "#450a0a",
-  fontWeight: 700,
-} satisfies CSSProperties;
-
-const errorTextStyle = {
-  marginTop: "14px",
-  color: "#fecaca",
-  background: "#450a0a",
-  border: "1px solid #7f1d1d",
-  borderRadius: "14px",
-  padding: "10px 12px",
-} satisfies CSSProperties;
-
-const resultsGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-  gap: "14px",
-  marginTop: "22px",
-} satisfies CSSProperties;
-
-const resultCardStyle = {
-  border: "1px solid #1e293b",
-  borderRadius: "20px",
-  padding: "16px",
-  background: "#020617",
-} satisfies CSSProperties;
-
-const resultTitleStyle = {
-  margin: "0 0 12px",
-  fontSize: "17px",
-} satisfies CSSProperties;
-
-const metricStyle = {
-  display: "grid",
-  gap: "4px",
-  margin: "10px 0",
-} satisfies CSSProperties;
+function cx(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}

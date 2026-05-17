@@ -1,10 +1,5 @@
-import {
-  type CSSProperties,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { Dispatch, PointerEvent, SetStateAction } from "react";
 import type { BodySimulationResult, SimulationFrame, Vector2D } from "./types";
 
 type SimpleMotionCanvasProps = {
@@ -24,6 +19,14 @@ type Viewport = {
   minY: number;
   maxY: number;
   scale: number;
+};
+
+type SimpleMotionCanvasContentProps = {
+  trajectories: BodySimulationResult[];
+  viewport: Viewport;
+  maxFrameCount: number;
+  viewTransform: ViewTransform;
+  setViewTransform: Dispatch<SetStateAction<ViewTransform>>;
 };
 
 const CANVAS_WIDTH = 900;
@@ -46,14 +49,9 @@ export function SimpleMotionCanvas({
   trajectories,
   replayKey,
 }: SimpleMotionCanvasProps) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const lastPointerPosition = useRef<Vector2D | null>(null);
-
-  const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   const [viewTransform, setViewTransform] = useState<ViewTransform>(
     DEFAULT_VIEW_TRANSFORM
   );
-  const [isDragging, setIsDragging] = useState(false);
 
   const viewport = useMemo(
     () => calculateViewport(trajectories),
@@ -69,6 +67,31 @@ export function SimpleMotionCanvas({
       ...trajectories.map((trajectory) => trajectory.frames.length)
     );
   }, [trajectories]);
+
+  return (
+    <SimpleMotionCanvasContent
+      key={`${replayKey}-${maxFrameCount}`}
+      trajectories={trajectories}
+      viewport={viewport}
+      maxFrameCount={maxFrameCount}
+      viewTransform={viewTransform}
+      setViewTransform={setViewTransform}
+    />
+  );
+}
+
+function SimpleMotionCanvasContent({
+  trajectories,
+  viewport,
+  maxFrameCount,
+  viewTransform,
+  setViewTransform,
+}: SimpleMotionCanvasContentProps) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const lastPointerPosition = useRef<Vector2D | null>(null);
+
+  const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   const safeFrameIndex =
     maxFrameCount === 0
@@ -100,19 +123,12 @@ export function SimpleMotionCanvas({
     return () => {
       canvas.removeEventListener("wheel", handleNativeWheel);
     };
-  }, []);
-
-  useEffect(() => {
-    setViewTransform(DEFAULT_VIEW_TRANSFORM);
-  }, [trajectories]);
+  }, [setViewTransform]);
 
   useEffect(() => {
     if (maxFrameCount === 0) {
-      setCurrentFrameIndex(0);
       return;
     }
-
-    setCurrentFrameIndex(0);
 
     const intervalId = window.setInterval(() => {
       setCurrentFrameIndex((previousIndex) => {
@@ -128,7 +144,7 @@ export function SimpleMotionCanvas({
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [maxFrameCount, replayKey, trajectories]);
+  }, [maxFrameCount]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -195,7 +211,7 @@ export function SimpleMotionCanvas({
     setViewTransform(DEFAULT_VIEW_TRANSFORM);
   }
 
-  function handlePointerDown(event: React.PointerEvent<HTMLCanvasElement>) {
+  function handlePointerDown(event: PointerEvent<HTMLCanvasElement>) {
     const canvas = canvasRef.current;
 
     if (!canvas) {
@@ -207,7 +223,7 @@ export function SimpleMotionCanvas({
     setIsDragging(true);
   }
 
-  function handlePointerMove(event: React.PointerEvent<HTMLCanvasElement>) {
+  function handlePointerMove(event: PointerEvent<HTMLCanvasElement>) {
     const canvas = canvasRef.current;
 
     if (!canvas || !isDragging || !lastPointerPosition.current) {
@@ -228,8 +244,8 @@ export function SimpleMotionCanvas({
     lastPointerPosition.current = currentPointerPosition;
   }
 
-  function handlePointerUp(event: React.PointerEvent<HTMLCanvasElement>) {
-  const canvas = canvasRef.current;
+  function handlePointerUp(event: PointerEvent<HTMLCanvasElement>) {
+    const canvas = canvasRef.current;
 
     if (canvas && canvas.hasPointerCapture(event.pointerId)) {
       canvas.releasePointerCapture(event.pointerId);
@@ -241,26 +257,40 @@ export function SimpleMotionCanvas({
 
   return (
     <div>
-      <div style={canvasToolbarStyle}>
-        <div style={canvasControlsStyle}>
-          <button type="button" onClick={zoomOut} style={canvasButtonStyle}>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={zoomOut}
+            className="rounded-full border border-slate-700 bg-slate-950 px-3 py-2 font-bold text-slate-200 transition hover:border-sky-400 hover:text-sky-300"
+          >
             -
           </button>
 
-          <span style={zoomLabelStyle}>
+          <span className="min-w-16 text-center text-sm text-slate-400">
             {(viewTransform.zoom * 100).toFixed(0)}%
           </span>
 
-          <button type="button" onClick={zoomIn} style={canvasButtonStyle}>
+          <button
+            type="button"
+            onClick={zoomIn}
+            className="rounded-full border border-slate-700 bg-slate-950 px-3 py-2 font-bold text-slate-200 transition hover:border-sky-400 hover:text-sky-300"
+          >
             +
           </button>
 
-          <button type="button" onClick={resetView} style={canvasButtonStyle}>
+          <button
+            type="button"
+            onClick={resetView}
+            className="rounded-full border border-slate-700 bg-slate-950 px-4 py-2 font-bold text-slate-200 transition hover:border-sky-400 hover:text-sky-300"
+          >
             Reset view
           </button>
         </div>
 
-        <p style={canvasHintStyle}>Scroll to zoom, drag to move</p>
+        <p className="m-0 text-sm text-slate-500">
+          Scroll to zoom, drag to move
+        </p>
       </div>
 
       <canvas
@@ -271,19 +301,14 @@ export function SimpleMotionCanvas({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
-        style={{
-          width: "100%",
-          border: "1px solid #1e293b",
-          borderRadius: "24px",
-          background: "#020617",
-          boxShadow: "0 24px 80px rgba(15, 23, 42, 0.55)",
-          cursor: isDragging ? "grabbing" : "grab",
-          touchAction: "none",
-        }}
+        className={cx(
+          "w-full touch-none rounded-3xl border border-slate-800 bg-slate-950 shadow-2xl shadow-slate-950/50",
+          isDragging ? "cursor-grabbing" : "cursor-grab"
+        )}
       />
 
       {trajectories.length > 0 && (
-        <div style={trajectoryLegendStyle}>
+        <div className="mt-4 flex flex-wrap gap-2.5">
           {trajectories.map((trajectory, index) => {
             const frame =
               trajectory.frames[
@@ -291,14 +316,13 @@ export function SimpleMotionCanvas({
               ];
 
             return (
-              <div key={trajectory.id} style={trajectoryBadgeStyle}>
+              <div
+                key={trajectory.id}
+                className="rounded-full border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300"
+              >
                 <span
+                  className="mr-2 inline-block h-2.5 w-2.5 rounded-full"
                   style={{
-                    display: "inline-block",
-                    width: "10px",
-                    height: "10px",
-                    borderRadius: "999px",
-                    marginRight: "8px",
                     background: getColor(index),
                   }}
                 />
@@ -502,7 +526,7 @@ function toCanvasPosition(
 }
 
 function getCanvasPointerPosition(
-  event: React.PointerEvent<HTMLCanvasElement>,
+  event: PointerEvent<HTMLCanvasElement>,
   canvas: HTMLCanvasElement
 ): Vector2D {
   const rect = canvas.getBoundingClientRect();
@@ -521,57 +545,6 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
-const canvasToolbarStyle = {
-  display: "flex",
-  gap: "10px",
-  alignItems: "center",
-  justifyContent: "space-between",
-  marginBottom: "12px",
-  flexWrap: "wrap",
-} satisfies CSSProperties;
-
-const canvasControlsStyle = {
-  display: "flex",
-  gap: "8px",
-  alignItems: "center",
-  flexWrap: "wrap",
-} satisfies CSSProperties;
-
-const canvasButtonStyle = {
-  border: "1px solid #334155",
-  borderRadius: "999px",
-  padding: "8px 12px",
-  color: "#e2e8f0",
-  background: "#0f172a",
-  fontWeight: 700,
-  cursor: "pointer",
-} satisfies CSSProperties;
-
-const zoomLabelStyle = {
-  color: "#94a3b8",
-  fontSize: "13px",
-  minWidth: "72px",
-  textAlign: "center",
-} satisfies CSSProperties;
-
-const canvasHintStyle = {
-  margin: 0,
-  color: "#64748b",
-  fontSize: "13px",
-} satisfies CSSProperties;
-
-const trajectoryLegendStyle = {
-  marginTop: "14px",
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "10px",
-} satisfies CSSProperties;
-
-const trajectoryBadgeStyle = {
-  border: "1px solid #1e293b",
-  borderRadius: "999px",
-  padding: "8px 12px",
-  color: "#cbd5e1",
-  background: "#0f172a",
-  fontSize: "13px",
-} satisfies CSSProperties;
+function cx(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
