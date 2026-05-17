@@ -10,6 +10,7 @@ import pl.exceptionhandled.cosmicengine.simulation.SimulationDemoService;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.ConfigurableSimpleMotionSimulationResponse;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.SimpleMotionSimulationRequest;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.SimpleMotionSimulationResponse;
+import pl.exceptionhandled.cosmicengine.simulation.api.dto.SimpleMotionTrajectoryResponse;
 
 @RestController
 @RequestMapping("/api/v1/simulations")
@@ -31,5 +32,12 @@ public class SimulationController {
             @Valid @RequestBody SimpleMotionSimulationRequest request
     ) {
         return simulationDemoService.runConfigurableSimpleMotionSimulation(request);
+    }
+
+    @PostMapping("/simple-motion/trajectory")
+    public SimpleMotionTrajectoryResponse runSimpleMotionTrajectory(
+            @Valid @RequestBody SimpleMotionSimulationRequest request
+    ) {
+        return simulationDemoService.runSimpleMotionTrajectory(request);
     }
 }
