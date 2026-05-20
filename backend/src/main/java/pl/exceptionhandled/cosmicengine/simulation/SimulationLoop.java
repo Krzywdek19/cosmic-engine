@@ -4,6 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.exceptionhandled.cosmicengine.physics.engine.PhysicsEngine;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
+import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Component
@@ -30,6 +34,25 @@ public class SimulationLoop {
         for (int i = 0; i < steps; i++) {
             physicsEngine.updateWithGravity(affectedBody, attractingBody, deltaTime);
         }
+    }
+
+    public List<Vector2D> runWithGravityTrajectory(
+            Body affectedBody,
+            Body attractingBody,
+            double deltaTime,
+            int steps
+    ) {
+        validateSteps(steps);
+
+        List<Vector2D> trajectory = new ArrayList<>();
+        trajectory.add(affectedBody.getPosition());
+
+        for (int i = 0; i < steps; i++) {
+            physicsEngine.updateWithGravity(affectedBody, attractingBody, deltaTime);
+            trajectory.add(affectedBody.getPosition());
+        }
+
+        return trajectory;
     }
 
     private void validateSteps(int steps) {

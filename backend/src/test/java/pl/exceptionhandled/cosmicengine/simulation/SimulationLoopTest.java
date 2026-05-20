@@ -6,6 +6,8 @@ import pl.exceptionhandled.cosmicengine.physics.engine.PhysicsEngine;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SimulationLoopTest {
@@ -90,6 +92,41 @@ class SimulationLoopTest {
 
         assertTrue(planet.getPosition().x() < 10.0);
         assertTrue(planet.getPosition().y() > 0.0);
+    }
+
+    @Test
+    void shouldReturnGravityTrajectory() {
+        Body planet = body(
+                10.0,
+                10.0, 0.0,
+                0.0, 1.0,
+                0.0, 0.0
+        );
+
+        Body sun = body(
+                20.0,
+                0.0, 0.0,
+                0.0, 0.0,
+                0.0, 0.0
+        );
+
+        List<Vector2D> trajectory = simulationLoop.runWithGravityTrajectory(
+                planet,
+                sun,
+                1.0,
+                5
+        );
+
+        assertEquals(6, trajectory.size());
+
+        Vector2D firstPosition = trajectory.get(0);
+        Vector2D lastPosition = trajectory.get(trajectory.size() - 1);
+
+
+        assertEquals(new Vector2D(10.0, 0.0), firstPosition);
+
+        assertTrue(lastPosition.x() < firstPosition.x());
+        assertTrue(lastPosition.y() > firstPosition.y());
     }
 
     private Body body(
