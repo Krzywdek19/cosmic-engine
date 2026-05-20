@@ -104,6 +104,7 @@ public class SimulationDemoService {
         );
     }
 
+
     private SimpleMotionSetup prepareSimpleMotionSetup(SimpleMotionSimulationRequest request) {
         Vector2D initialPosition = request.position().toVector2D();
         Vector2D initialVelocity = request.velocity().toVector2D();

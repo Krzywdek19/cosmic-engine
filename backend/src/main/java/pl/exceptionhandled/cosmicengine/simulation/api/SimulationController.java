@@ -1,26 +1,24 @@
 package pl.exceptionhandled.cosmicengine.simulation.api;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.exceptionhandled.cosmicengine.simulation.SimulationDemoService;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.ConfigurableSimpleMotionSimulationResponse;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.SimpleMotionSimulationRequest;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.SimpleMotionSimulationResponse;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.SimpleMotionTrajectoryResponse;
+import pl.exceptionhandled.cosmicengine.simulation.SimulationService;
+import pl.exceptionhandled.cosmicengine.simulation.api.dto.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/simulations")
 public class SimulationController {
 
     private final SimulationDemoService simulationDemoService;
+    private final SimulationService simulationService;
 
-    public SimulationController(SimulationDemoService simulationDemoService) {
-        this.simulationDemoService = simulationDemoService;
-    }
 
     @GetMapping("/simple-motion")
     public SimpleMotionSimulationResponse runSimpleMotionSimulation() {
@@ -39,5 +37,12 @@ public class SimulationController {
             @Valid @RequestBody SimpleMotionSimulationRequest request
     ) {
         return simulationDemoService.runSimpleMotionTrajectory(request);
+    }
+
+    @PostMapping("/gravity/trajectory")
+    public GravityTrajectoryResponse simulateGravityTrajectory(
+            @Valid @RequestBody GravityTrajectoryRequest request
+    ) {
+        return simulationService.simulateGravityTrajectory(request);
     }
 }
