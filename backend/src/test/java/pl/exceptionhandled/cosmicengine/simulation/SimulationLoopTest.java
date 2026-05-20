@@ -43,6 +43,34 @@ class SimulationLoopTest {
         );
     }
 
+    @Test
+    void shouldRunSimulationWithGravityForOneStep() {
+        Body planet = body(
+                10.0,
+                0.0, 0.0,
+                0.0, 0.0,
+                0.0, 0.0
+        );
+
+        Body sun = body(
+                20.0,
+                10.0, 0.0,
+                0.0, 0.0,
+                0.0, 0.0
+        );
+
+        simulationLoop.runWithGravity(planet, sun, 1.0, 1);
+
+        assertEquals(0.1, planet.getPosition().x(), 0.000001);
+        assertEquals(0.0, planet.getPosition().y(), 0.000001);
+
+        assertEquals(0.2, planet.getVelocity().x(), 0.000001);
+        assertEquals(0.0, planet.getVelocity().y(), 0.000001);
+
+        assertEquals(0.2, planet.getAcceleration().x(), 0.000001);
+        assertEquals(0.0, planet.getAcceleration().y(), 0.000001);
+    }
+
     private Body body(
             double mass,
             double positionX,
