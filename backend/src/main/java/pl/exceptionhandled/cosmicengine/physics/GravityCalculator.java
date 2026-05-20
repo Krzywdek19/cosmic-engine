@@ -6,32 +6,32 @@ import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 
 @Component
 public class GravityCalculator {
-    private double gravitationalConstant;
+    private final double gravitationalConstant;
 
     public GravityCalculator(double gravitationalConstant) {
         this.gravitationalConstant = gravitationalConstant;
     }
 
     public GravityCalculator() {
-        gravitationalConstant = 6.67430 * Math.pow(10, -11); // Standard gravitational constant in m^3 kg^-1 s^-2
+        this.gravitationalConstant = 6.67430 * Math.pow(10, -11);
     }
 
-    Vector2D calculateForce(Body affectedBody, Body attractingBody) {
-        Vector2D distanceVector = attractingBody.getPosition().subtract(affectedBody.getPosition());
+    public Vector2D calculateForce(Body affectedBody, Body attractingBody) {
+        Vector2D distanceVector = attractingBody.getPosition()
+                .subtract(affectedBody.getPosition());
 
         double distance = distanceVector.magnitude();
 
-        if(distance == 0) {
+        if (distance == 0) {
             throw new IllegalArgumentException("Distance between bodies cannot be zero");
         }
 
         Vector2D direction = distanceVector.normalize();
 
-
         double forceMagnitude = gravitationalConstant
                 * affectedBody.getMass()
                 * attractingBody.getMass()
-                / (Math.pow(distance, 2));
+                / Math.pow(distance, 2);
 
         return direction.multiply(forceMagnitude);
     }

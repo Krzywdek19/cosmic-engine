@@ -1,11 +1,17 @@
 package pl.exceptionhandled.cosmicengine.physics.engine;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import pl.exceptionhandled.cosmicengine.physics.GravityCalculator;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 
+@RequiredArgsConstructor
 @Component
 public class PhysicsEngine {
+
+    private final GravityCalculator gravityCalculator;
+
     public void update(Body body, double deltaTime) {
         if (deltaTime <= 0) {
             throw new IllegalArgumentException("Delta time must be greater than zero");
@@ -26,8 +32,18 @@ public class PhysicsEngine {
         body.setVelocity(newVelocity);
     }
 
-    public void applyForce(Body body, Vector2D force){
+    public void applyForce(Body body, Vector2D force) {
         Vector2D acceleration = force.divide(body.getMass());
         body.setAcceleration(acceleration);
+    }
+
+    public Body updateWithGravity(Body affectedBody, Body attractingBody, double deltaTime) {
+        Vector2D gravityForce = gravityCalculator.calculateForce(affectedBody, attractingBody);
+
+        applyForce(affectedBody, gravityForce);
+
+        update(affectedBody, deltaTime);
+
+        return affectedBody;
     }
 }

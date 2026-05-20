@@ -9,47 +9,24 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class GravityCalculatorTest {
 
+    private static final double EPSILON = 0.000001;
+
+    private final GravityCalculator gravityCalculator = new GravityCalculator(1.0);
+
     @Test
-    void shouldCalculateGravitationalForceBetweenTwoBodies() throws IllegalAccessException {
-        GravityCalculator gravityCalculator = new GravityCalculator(1.0);
-
-        Body affectedBody = new Body(
-                10.0,
-                new Vector2D(0.0, 0.0),
-                new Vector2D(0.0, 0.0),
-                new Vector2D(0.0, 0.0)
-        );
-
-        Body attractingBody = new Body(
-                20.0,
-                new Vector2D(10.0, 0.0),
-                new Vector2D(0.0, 0.0),
-                new Vector2D(0.0, 0.0)
-        );
+    void shouldCalculateGravitationalForceBetweenTwoBodies() {
+        Body affectedBody = body(10.0, 0.0, 0.0);
+        Body attractingBody = body(20.0, 10.0, 0.0);
 
         Vector2D force = gravityCalculator.calculateForce(affectedBody, attractingBody);
 
-        assertEquals(2.0, force.x(), 0.000001);
-        assertEquals(0.0, force.y(), 0.000001);
+        assertVectorEquals(new Vector2D(2.0, 0.0), force);
     }
 
     @Test
     void shouldThrowExceptionWhenBodiesHaveTheSamePosition() {
-        GravityCalculator gravityCalculator = new GravityCalculator(1.0);
-
-        Body affectedBody = new Body(
-                10.0,
-                new Vector2D(0.0, 0.0),
-                new Vector2D(0.0, 0.0),
-                new Vector2D(0.0, 0.0)
-        );
-
-        Body attractingBody = new Body(
-                20.0,
-                new Vector2D(0.0, 0.0),
-                new Vector2D(0.0, 0.0),
-                new Vector2D(0.0, 0.0)
-        );
+        Body affectedBody = body(10.0, 0.0, 0.0);
+        Body attractingBody = body(20.0, 0.0, 0.0);
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -59,26 +36,27 @@ class GravityCalculatorTest {
 
     @Test
     void shouldCalculateEqualAndOppositeForces() {
-        GravityCalculator gravityCalculator = new GravityCalculator(1.0);
-
-        Body aBody = new Body(
-                10.0,
-                new Vector2D(0.0, 0.0),
-                new Vector2D(0.0, 0.0),
-                new Vector2D(0.0, 0.0)
-        );
-
-        Body bBody = new Body(
-                20.0,
-                new Vector2D(10.0, 0.0),
-                new Vector2D(0.0, 0.0),
-                new Vector2D(0.0, 0.0)
-        );
+        Body aBody = body(10.0, 0.0, 0.0);
+        Body bBody = body(20.0, 10.0, 0.0);
 
         Vector2D forceOnA = gravityCalculator.calculateForce(aBody, bBody);
         Vector2D forceOnB = gravityCalculator.calculateForce(bBody, aBody);
 
-        assertEquals(-forceOnA.x(), forceOnB.x(), 0.000001);
-        assertEquals(-forceOnA.y(), forceOnB.y(), 0.000001);
+        assertEquals(-forceOnA.x(), forceOnB.x(), EPSILON);
+        assertEquals(-forceOnA.y(), forceOnB.y(), EPSILON);
+    }
+
+    private Body body(double mass, double positionX, double positionY) {
+        return new Body(
+                mass,
+                new Vector2D(positionX, positionY),
+                new Vector2D(0.0, 0.0),
+                new Vector2D(0.0, 0.0)
+        );
+    }
+
+    private void assertVectorEquals(Vector2D expected, Vector2D actual) {
+        assertEquals(expected.x(), actual.x(), EPSILON);
+        assertEquals(expected.y(), actual.y(), EPSILON);
     }
 }
