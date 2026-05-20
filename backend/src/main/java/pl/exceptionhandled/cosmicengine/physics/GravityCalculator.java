@@ -16,19 +16,21 @@ public class GravityCalculator {
         gravitationalConstant = 6.67430 * Math.pow(10, -11); // Standard gravitational constant in m^3 kg^-1 s^-2
     }
 
-    Vector2D calculateForce(Body affectedBody, Body attractingfBody) throws IllegalAccessException {
-        Vector2D distanceVector = affectedBody.getPosition().subtract(attractingfBody.getPosition());
+    Vector2D calculateForce(Body affectedBody, Body attractingBody) {
+        Vector2D distanceVector = attractingBody.getPosition().subtract(affectedBody.getPosition());
 
         double distance = distanceVector.magnitude();
-        Vector2D direction = distanceVector.normalize();
 
         if(distance == 0) {
-            throw new IllegalAccessException("Distance between bodies cannot be zero");
+            throw new IllegalArgumentException("Distance between bodies cannot be zero");
         }
+
+        Vector2D direction = distanceVector.normalize();
+
 
         double forceMagnitude = gravitationalConstant
                 * affectedBody.getMass()
-                * attractingfBody.getMass()
+                * attractingBody.getMass()
                 / (Math.pow(distance, 2));
 
         return direction.multiply(forceMagnitude);
