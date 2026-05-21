@@ -10,6 +10,7 @@ import pl.exceptionhandled.cosmicengine.simulation.api.dto.GravityTrajectoryResp
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.SimulationBodyRequest;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DRequest;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DResponse;
+import pl.exceptionhandled.cosmicengine.simulation.policy.CentralBodySelectionPolicy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,29 +20,30 @@ import java.util.List;
 public class SimulationService {
 
     private final SimulationLoop simulationLoop;
+    private final CentralBodySelectionPolicy centralBodySelectionPolicy;
 
     public GravityTrajectoryResponse simulateStaticCentralGravityTrajectory(GravityTrajectoryRequest request) {
-        List<SimulationBodyRequest> bodyRequests = request.bodies();
+        List<Body> bodies = request.bodies()
+                .stream()
+                .map(this::toBody)
+                .toList();
 
-        int attractingBodyIndex = findMostMassiveBodyIndex(bodyRequests);
-        SimulationBodyRequest attractingBodyRequest = bodyRequests.get(attractingBodyIndex);
+        int centralBodyIndex = centralBodySelectionPolicy.selectCentralBodyIndex(bodies);
 
-        Body attractingBody = toBody(attractingBodyRequest);
+        Body centralBody = bodies.get(centralBodyIndex);
 
         List<BodyTrajectoryResponse> trajectories = new ArrayList<>();
 
-        for (int i = 0; i < bodyRequests.size(); i++) {
-            if (i == attractingBodyIndex) {
+        for (int i = 0; i < bodies.size(); i++) {
+            if (i == centralBodyIndex) {
                 continue;
             }
 
-            SimulationBodyRequest affectedBodyRequest = bodyRequests.get(i);
-
-            Body affectedBody = toBody(affectedBodyRequest);
+            Body affectedBody = bodies.get(i);
 
             List<Vector2DResponse> trajectory = simulationLoop.runStaticCentralGravityTrajectory(
                             affectedBody,
-                            attractingBody,
+                            centralBody,
                             request.deltaTime(),
                             request.steps()
                     )
@@ -51,32 +53,16 @@ public class SimulationService {
 
             trajectories.add(new BodyTrajectoryResponse(
                     i,
-                    affectedBodyRequest.mass(),
+                    affectedBody.getMass(),
                     trajectory
             ));
         }
 
         return new GravityTrajectoryResponse(
-                attractingBodyIndex,
-                toResponse(attractingBody.getPosition()),
+                centralBodyIndex,
+                toResponse(centralBody.getPosition()),
                 trajectories
         );
-    }
-
-    private int findMostMassiveBodyIndex(List<SimulationBodyRequest> bodies) {
-        int mostMassiveBodyIndex = 0;
-        double highestMass = bodies.get(0).mass();
-
-        for (int i = 1; i < bodies.size(); i++) {
-            double currentMass = bodies.get(i).mass();
-
-            if (currentMass > highestMass) {
-                highestMass = currentMass;
-                mostMassiveBodyIndex = i;
-            }
-        }
-
-        return mostMassiveBodyIndex;
     }
 
     private Body toBody(SimulationBodyRequest request) {
