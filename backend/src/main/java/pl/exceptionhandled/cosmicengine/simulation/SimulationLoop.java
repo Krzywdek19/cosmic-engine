@@ -23,7 +23,7 @@ public class SimulationLoop {
         }
     }
 
-    public void runWithGravity(
+    public void runStaticCentralGravity(
             Body affectedBody,
             Body attractingBody,
             double deltaTime,
@@ -32,11 +32,11 @@ public class SimulationLoop {
         validateSteps(steps);
 
         for (int i = 0; i < steps; i++) {
-            physicsEngine.updateWithGravity(affectedBody, attractingBody, deltaTime);
+            physicsEngine.updateInStaticGravityField(affectedBody, attractingBody, deltaTime);
         }
     }
 
-    public List<Vector2D> runWithGravityTrajectory(
+    public List<Vector2D> runStaticCentralGravityTrajectory(
             Body affectedBody,
             Body attractingBody,
             double deltaTime,
@@ -48,7 +48,7 @@ public class SimulationLoop {
         trajectory.add(affectedBody.getPosition());
 
         for (int i = 0; i < steps; i++) {
-            physicsEngine.updateWithGravity(affectedBody, attractingBody, deltaTime);
+            physicsEngine.updateInStaticGravityField(affectedBody, attractingBody, deltaTime);
             trajectory.add(affectedBody.getPosition());
         }
 

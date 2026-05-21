@@ -20,7 +20,7 @@ public class SimulationService {
 
     private final SimulationLoop simulationLoop;
 
-    public GravityTrajectoryResponse simulateGravityTrajectory(GravityTrajectoryRequest request) {
+    public GravityTrajectoryResponse simulateStaticCentralGravityTrajectory(GravityTrajectoryRequest request) {
         List<SimulationBodyRequest> bodyRequests = request.bodies();
 
         int attractingBodyIndex = findMostMassiveBodyIndex(bodyRequests);
@@ -39,7 +39,7 @@ public class SimulationService {
 
             Body affectedBody = toBody(affectedBodyRequest);
 
-            List<Vector2DResponse> trajectory = simulationLoop.runWithGravityTrajectory(
+            List<Vector2DResponse> trajectory = simulationLoop.runStaticCentralGravityTrajectory(
                             affectedBody,
                             attractingBody,
                             request.deltaTime(),

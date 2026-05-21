@@ -33,7 +33,7 @@ class SimulationServiceTest {
                 5
         );
 
-        GravityTrajectoryResponse response = simulationService.simulateGravityTrajectory(request);
+        GravityTrajectoryResponse response = simulationService.simulateStaticCentralGravityTrajectory(request);
 
         assertEquals(1, response.attractingBodyIndex());
         assertEquals(new Vector2DResponse(0.0, 0.0), response.attractingBodyPosition());
@@ -51,7 +51,7 @@ class SimulationServiceTest {
                 5
         );
 
-        GravityTrajectoryResponse response = simulationService.simulateGravityTrajectory(request);
+        GravityTrajectoryResponse response = simulationService.simulateStaticCentralGravityTrajectory(request);
 
         BodyTrajectoryResponse planetTrajectory = response.trajectories().get(0);
 

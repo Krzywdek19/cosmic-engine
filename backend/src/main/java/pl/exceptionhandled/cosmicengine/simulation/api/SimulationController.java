@@ -40,9 +40,9 @@ public class SimulationController {
     }
 
     @PostMapping("/gravity/trajectory")
-    public GravityTrajectoryResponse simulateGravityTrajectory(
+    public GravityTrajectoryResponse simulateStaticCentralGravityTrajectory(
             @Valid @RequestBody GravityTrajectoryRequest request
     ) {
-        return simulationService.simulateGravityTrajectory(request);
+        return simulationService.simulateStaticCentralGravityTrajectory(request);
     }
 }

@@ -76,7 +76,7 @@ class PhysicsEngineTest {
                 0.0, 0.0
         );
 
-        Body updatedPlanet = physicsEngine.updateWithGravity(planet, sun, 1.0);
+        Body updatedPlanet = physicsEngine.updateInStaticGravityField(planet, sun, 1.0);
 
         assertVectorEquals(new Vector2D(0.2, 0.0), updatedPlanet.getAcceleration());
         assertVectorEquals(new Vector2D(0.2, 0.0), updatedPlanet.getVelocity());

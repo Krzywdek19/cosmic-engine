@@ -60,7 +60,7 @@ class SimulationLoopTest {
                 0.0, 0.0
         );
 
-        simulationLoop.runWithGravity(planet, sun, 1.0, 1);
+        simulationLoop.runStaticCentralGravity(planet, sun, 1.0, 1);
 
         assertEquals(0.1, planet.getPosition().x(), 0.000001);
         assertEquals(0.0, planet.getPosition().y(), 0.000001);
@@ -88,7 +88,7 @@ class SimulationLoopTest {
                 0.0, 0.0
         );
 
-        simulationLoop.runWithGravity(planet, sun, 1.0, 5);
+        simulationLoop.runStaticCentralGravity(planet, sun, 1.0, 5);
 
         assertTrue(planet.getPosition().x() < 10.0);
         assertTrue(planet.getPosition().y() > 0.0);
@@ -110,7 +110,7 @@ class SimulationLoopTest {
                 0.0, 0.0
         );
 
-        List<Vector2D> trajectory = simulationLoop.runWithGravityTrajectory(
+        List<Vector2D> trajectory = simulationLoop.runStaticCentralGravityTrajectory(
                 planet,
                 sun,
                 1.0,

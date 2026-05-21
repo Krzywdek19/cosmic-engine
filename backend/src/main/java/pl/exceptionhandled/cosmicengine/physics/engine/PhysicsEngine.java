@@ -37,7 +37,7 @@ public class PhysicsEngine {
         body.setAcceleration(acceleration);
     }
 
-    public Body updateWithGravity(Body affectedBody, Body attractingBody, double deltaTime) {
+    public Body updateInStaticGravityField(Body affectedBody, Body attractingBody, double deltaTime) {
         Vector2D gravityForce = gravityCalculator.calculateForce(affectedBody, attractingBody);
 
         applyForce(affectedBody, gravityForce);
