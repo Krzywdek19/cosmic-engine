@@ -10,6 +10,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -277,5 +279,98 @@ class SimulationControllerTest {
               "steps": 1
             }
             """.formatted(bodiesJson);
+    }
+
+    @Test
+    void shouldRunGravityTrajectorySimulation() throws Exception {
+        String requestBody = """
+            {
+              "bodies": [
+                {
+                  "mass": 1.0,
+                  "position": {
+                    "x": 10.0,
+                    "y": 0.0
+                  },
+                  "velocity": {
+                    "x": 0.0,
+                    "y": 1.0
+                  }
+                },
+                {
+                  "mass": 100.0,
+                  "position": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "velocity": {
+                    "x": 0.0,
+                    "y": 0.0
+                  }
+                }
+              ],
+              "deltaTime": 1.0,
+              "steps": 3
+            }
+            """;
+
+        mockMvc.perform(post("/api/v1/simulations/gravity/trajectory")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.attractingBodyIndex").value(1))
+                .andExpect(jsonPath("$.attractingBodyPosition.x").value(0.0))
+                .andExpect(jsonPath("$.attractingBodyPosition.y").value(0.0))
+                .andExpect(jsonPath("$.trajectories.length()").value(1))
+                .andExpect(jsonPath("$.trajectories[0].bodyIndex").value(0))
+                .andExpect(jsonPath("$.trajectories[0].mass").value(1.0))
+                .andExpect(jsonPath("$.trajectories[0].trajectory.length()").value(4))
+                .andExpect(jsonPath("$.trajectories[0].trajectory[0].x").value(10.0))
+                .andExpect(jsonPath("$.trajectories[0].trajectory[0].y").value(0.0))
+                .andExpect(jsonPath("$.trajectories[0].trajectory[1].x").isNumber())
+                .andExpect(jsonPath("$.trajectories[0].trajectory[1].y").isNumber());
+    }
+
+    @Test
+    void shouldCurveGravityTrajectoryTowardsAttractingBody() throws Exception {
+        String requestBody = """
+            {
+              "bodies": [
+                {
+                  "mass": 1.0,
+                  "position": {
+                    "x": 10.0,
+                    "y": 0.0
+                  },
+                  "velocity": {
+                    "x": 0.0,
+                    "y": 1.0
+                  }
+                },
+                {
+                  "mass": 100.0,
+                  "position": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "velocity": {
+                    "x": 0.0,
+                    "y": 0.0
+                  }
+                }
+              ],
+              "deltaTime": 1.0,
+              "steps": 1
+            }
+            """;
+
+        mockMvc.perform(post("/api/v1/simulations/gravity/trajectory")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.trajectories[0].trajectory[0].x").value(10.0))
+                .andExpect(jsonPath("$.trajectories[0].trajectory[0].y").value(0.0))
+                .andExpect(jsonPath("$.trajectories[0].trajectory[1].x").value(lessThan(10.0)))
+                .andExpect(jsonPath("$.trajectories[0].trajectory[1].y").value(greaterThan(0.0)));
     }
 }
