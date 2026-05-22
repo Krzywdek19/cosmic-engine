@@ -11,6 +11,8 @@ import pl.exceptionhandled.cosmicengine.simulation.api.dto.SimulationBodyRequest
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DRequest;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DResponse;
 import pl.exceptionhandled.cosmicengine.simulation.mapper.SimulationBodyMapper;
+import pl.exceptionhandled.cosmicengine.simulation.model.GravitySimulationModel;
+import pl.exceptionhandled.cosmicengine.simulation.model.IntegratorType;
 import pl.exceptionhandled.cosmicengine.simulation.policy.MostMassiveBodySelectionPolicy;
 
 import java.util.List;
@@ -38,8 +40,10 @@ class SimulationServiceTest {
 
         GravityTrajectoryResponse response = simulationService.simulateStaticCentralGravityTrajectory(request);
 
-        assertEquals(1, response.attractingBodyIndex());
-        assertEquals(new Vector2DResponse(0.0, 0.0), response.attractingBodyPosition());
+        assertEquals(1, response.centralBodyIndex());
+        assertEquals(new Vector2DResponse(0.0, 0.0), response.centralBodyPosition());
+        assertEquals(GravitySimulationModel.STATIC_CENTRAL_BODY, response.model());
+        assertEquals(IntegratorType.CONSTANT_ACCELERATION_STEP, response.integrator());
         assertEquals(2, response.trajectories().size());
     }
 

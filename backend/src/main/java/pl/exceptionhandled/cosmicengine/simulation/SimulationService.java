@@ -7,6 +7,8 @@ import pl.exceptionhandled.cosmicengine.simulation.api.dto.BodyTrajectoryRespons
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.GravityTrajectoryRequest;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.GravityTrajectoryResponse;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DResponse;
+import pl.exceptionhandled.cosmicengine.simulation.model.GravitySimulationModel;
+import pl.exceptionhandled.cosmicengine.simulation.model.IntegratorType;
 import pl.exceptionhandled.cosmicengine.simulation.policy.CentralBodySelectionPolicy;
 import pl.exceptionhandled.cosmicengine.simulation.mapper.SimulationBodyMapper;
 
@@ -58,6 +60,8 @@ public class SimulationService {
         }
 
         return new GravityTrajectoryResponse(
+                GravitySimulationModel.STATIC_CENTRAL_BODY,
+                IntegratorType.CONSTANT_ACCELERATION_STEP,
                 centralBodyIndex,
                 simulationBodyMapper.toResponse(centralBody.getPosition()),
                 trajectories

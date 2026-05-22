@@ -15,12 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class SimulationDemoService {
+public class SimpleMotionSimulationService {
 
     private final SimulationLoop simulationLoop;
     private final PhysicsEngine physicsEngine;
 
-    public SimulationDemoService(SimulationLoop simulationLoop, PhysicsEngine physicsEngine) {
+    public SimpleMotionSimulationService(SimulationLoop simulationLoop, PhysicsEngine physicsEngine) {
         this.simulationLoop = simulationLoop;
         this.physicsEngine = physicsEngine;
     }
