@@ -1,6 +1,7 @@
 package pl.exceptionhandled.cosmicengine.physics.model;
 
 public record Vector2D(double x, double y) {
+    public static final Vector2D ZERO = new Vector2D(0.0, 0.0);
 
     public Vector2D add(Vector2D other) {
         return new Vector2D(this.x + other.x, this.y + other.y);

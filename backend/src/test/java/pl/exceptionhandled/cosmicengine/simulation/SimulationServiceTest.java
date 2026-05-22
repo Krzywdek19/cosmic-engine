@@ -9,6 +9,7 @@ import pl.exceptionhandled.cosmicengine.simulation.api.dto.GravityTrajectoryResp
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.SimulationBodyRequest;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DRequest;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DResponse;
+import pl.exceptionhandled.cosmicengine.simulation.mapper.SimulationBodyMapper;
 import pl.exceptionhandled.cosmicengine.simulation.policy.MostMassiveBodySelectionPolicy;
 
 import java.util.List;
@@ -20,7 +21,7 @@ class SimulationServiceTest {
 
     private final PhysicsEngine physicsEngine = new PhysicsEngine(new GravityCalculator(1.0));
     private final SimulationLoop simulationLoop = new SimulationLoop(physicsEngine);
-    private final SimulationService simulationService = new SimulationService(simulationLoop, new MostMassiveBodySelectionPolicy());
+    private final SimulationService simulationService = new SimulationService(simulationLoop, new MostMassiveBodySelectionPolicy(), new SimulationBodyMapper());
 
     @Test
     void shouldUseMostMassiveBodyAsAttractingBody() {
