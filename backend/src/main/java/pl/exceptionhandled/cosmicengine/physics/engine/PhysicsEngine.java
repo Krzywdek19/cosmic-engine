@@ -6,6 +6,8 @@ import pl.exceptionhandled.cosmicengine.physics.GravityCalculator;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Component
 public class PhysicsEngine {
@@ -32,15 +34,27 @@ public class PhysicsEngine {
         body.setVelocity(newVelocity);
     }
 
-    public void applyForce(Body body, Vector2D force) {
+    public void applyTotalForce(Body body, Vector2D force) {
         Vector2D acceleration = force.divide(body.getMass());
         body.setAcceleration(acceleration);
     }
 
-    public Body updateInStaticGravityField(Body affectedBody, Body attractingBody, double deltaTime) {
+    public void applyForces(Body body, List<Vector2D> forces) {
+        Vector2D totalAcceleration = forces
+                .stream()
+                .reduce(Vector2D.ZERO, Vector2D::add);
+
+        applyTotalForce(body, totalAcceleration);
+    }
+
+    public Body updateInStaticGravityField(
+            Body affectedBody,
+            Body attractingBody,
+            double deltaTime
+    ) {
         Vector2D gravityForce = gravityCalculator.calculateForce(affectedBody, attractingBody);
 
-        applyForce(affectedBody, gravityForce);
+        applyForces(affectedBody, List.of(gravityForce));
 
         update(affectedBody, deltaTime);
 

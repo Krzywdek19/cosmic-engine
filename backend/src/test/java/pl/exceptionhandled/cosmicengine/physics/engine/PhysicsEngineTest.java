@@ -5,6 +5,8 @@ import pl.exceptionhandled.cosmicengine.physics.GravityCalculator;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -45,7 +47,7 @@ class PhysicsEngineTest {
     }
 
     @Test
-    void shouldApplyForceAsAcceleration() {
+    void shouldApplyTotalForceAsAcceleration() {
         Body body = body(
                 10.0,
                 0.0, 0.0,
@@ -55,9 +57,24 @@ class PhysicsEngineTest {
 
         Vector2D force = new Vector2D(20.0, 0.0);
 
-        physicsEngine.applyForce(body, force);
+        physicsEngine.applyTotalForce(body, force);
 
         assertVectorEquals(new Vector2D(2.0, 0.0), body.getAcceleration());
+    }
+
+    @Test
+    void shouldReplaceAccelerationWhenNewTotalForceIsApplied() {
+        Body body = body(
+                2.0,
+                0.0, 0.0,
+                0.0, 0.0,
+                0.0, 0.0
+        );
+
+        physicsEngine.applyTotalForce(body, new Vector2D(10.0, 0.0));
+        physicsEngine.applyTotalForce(body, new Vector2D(0.0, 6.0));
+
+        assertVectorEquals(new Vector2D(0.0, 3.0), body.getAcceleration());
     }
 
     @Test
@@ -81,6 +98,27 @@ class PhysicsEngineTest {
         assertVectorEquals(new Vector2D(0.2, 0.0), updatedPlanet.getAcceleration());
         assertVectorEquals(new Vector2D(0.2, 0.0), updatedPlanet.getVelocity());
         assertVectorEquals(new Vector2D(0.1, 0.0), updatedPlanet.getPosition());
+    }
+
+    @Test
+    void shouldApplyMultipleForcesAsTotalAcceleration() {
+        Body body = body(
+                2.0,
+                0.0, 0.0,
+                0.0, 0.0,
+                0.0, 0.0
+        );
+
+        physicsEngine.applyForces(
+                body,
+                List.of(
+                        new Vector2D(10.0, 0.0),
+                        new Vector2D(0.0, 6.0),
+                        new Vector2D(-4.0, 0.0)
+                )
+        );
+
+        assertVectorEquals(new Vector2D(3.0, 3.0), body.getAcceleration());
     }
 
     private Body body(

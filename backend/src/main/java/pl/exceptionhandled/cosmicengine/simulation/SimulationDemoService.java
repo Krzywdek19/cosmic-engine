@@ -117,7 +117,7 @@ public class SimulationDemoService {
                 new Vector2D(0, 0)
         );
 
-        physicsEngine.applyForce(body, appliedForce);
+        physicsEngine.applyTotalForce(body, appliedForce);
 
         return new SimpleMotionSetup(
                 body,
