@@ -3,6 +3,7 @@ package pl.exceptionhandled.cosmicengine.simulation;
 import org.junit.jupiter.api.Test;
 import pl.exceptionhandled.cosmicengine.physics.GravityCalculator;
 import pl.exceptionhandled.cosmicengine.physics.engine.PhysicsEngine;
+import pl.exceptionhandled.cosmicengine.physics.integrator.ConstantAccelerationStepIntegrator;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SimulationLoopTest {
 
-    private final PhysicsEngine physicsEngine = new PhysicsEngine(new GravityCalculator(1.0));
+    private final PhysicsEngine physicsEngine = new PhysicsEngine(new GravityCalculator(1.0), new ConstantAccelerationStepIntegrator());
     private final SimulationLoop simulationLoop = new SimulationLoop(physicsEngine);
 
     @Test

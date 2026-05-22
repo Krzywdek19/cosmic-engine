@@ -2,6 +2,7 @@ package pl.exceptionhandled.cosmicengine.physics.engine;
 
 import org.junit.jupiter.api.Test;
 import pl.exceptionhandled.cosmicengine.physics.GravityCalculator;
+import pl.exceptionhandled.cosmicengine.physics.integrator.ConstantAccelerationStepIntegrator;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 
@@ -14,7 +15,7 @@ class PhysicsEngineTest {
 
     private static final double EPSILON = 0.000001;
 
-    private final PhysicsEngine physicsEngine = new PhysicsEngine(new GravityCalculator(1.0));
+    private final PhysicsEngine physicsEngine = new PhysicsEngine(new GravityCalculator(1.0), new ConstantAccelerationStepIntegrator());
 
     @Test
     void shouldUpdateBodyPositionAndVelocity() {
