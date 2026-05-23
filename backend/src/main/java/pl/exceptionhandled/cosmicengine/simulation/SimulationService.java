@@ -3,14 +3,13 @@ package pl.exceptionhandled.cosmicengine.simulation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.*;
 import pl.exceptionhandled.cosmicengine.simulation.command.GravityTrajectoryCommand;
-import pl.exceptionhandled.cosmicengine.simulation.mapper.TrajectoryFrameMapper;
 import pl.exceptionhandled.cosmicengine.simulation.model.BodySimulationFrame;
 import pl.exceptionhandled.cosmicengine.simulation.model.GravitySimulationModel;
 import pl.exceptionhandled.cosmicengine.simulation.model.IntegratorType;
 import pl.exceptionhandled.cosmicengine.simulation.policy.CentralBodySelectionPolicy;
-import pl.exceptionhandled.cosmicengine.simulation.mapper.SimulationBodyMapper;
+import pl.exceptionhandled.cosmicengine.simulation.result.BodyTrajectoryResult;
+import pl.exceptionhandled.cosmicengine.simulation.result.GravityTrajectoryResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,17 +20,15 @@ public class SimulationService {
 
     private final SimulationLoop simulationLoop;
     private final CentralBodySelectionPolicy centralBodySelectionPolicy;
-    private final SimulationBodyMapper simulationBodyMapper;
-    private final TrajectoryFrameMapper trajectoryFrameMapper;
 
-    public GravityTrajectoryResponse simulateStaticCentralGravityTrajectory(GravityTrajectoryCommand command){
+    public GravityTrajectoryResult simulateStaticCentralGravityTrajectory(GravityTrajectoryCommand command) {
         List<Body> bodies = command.bodies();
 
         int centralBodyIndex = centralBodySelectionPolicy.selectCentralBodyIndex(bodies);
 
         Body centralBody = bodies.get(centralBodyIndex);
 
-        List<BodyTrajectoryResponse> trajectories = new ArrayList<>();
+        List<BodyTrajectoryResult> trajectories = new ArrayList<>();
 
         for (int i = 0; i < bodies.size(); i++) {
             if (i == centralBodyIndex) {
@@ -40,27 +37,25 @@ public class SimulationService {
 
             Body affectedBody = bodies.get(i);
 
-            List<BodySimulationFrame> simulationFrames = simulationLoop.runStaticCentralGravityFrames(
+            List<BodySimulationFrame> frames = simulationLoop.runStaticCentralGravityFrames(
                     affectedBody,
                     centralBody,
                     command.deltaTime(),
                     command.steps()
             );
 
-            List<TrajectoryFrameResponse> frames = trajectoryFrameMapper.toResponses(simulationFrames);
-
-            trajectories.add(new BodyTrajectoryResponse(
+            trajectories.add(new BodyTrajectoryResult(
                     i,
                     affectedBody.getMass(),
                     frames
             ));
         }
 
-        return new GravityTrajectoryResponse(
+        return new GravityTrajectoryResult(
                 GravitySimulationModel.STATIC_CENTRAL_BODY,
                 IntegratorType.CONSTANT_ACCELERATION_STEP,
                 centralBodyIndex,
-                simulationBodyMapper.toResponse(centralBody.getPosition()),
+                centralBody.getPosition(),
                 trajectories
         );
     }

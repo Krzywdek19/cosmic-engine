@@ -12,6 +12,8 @@ import pl.exceptionhandled.cosmicengine.simulation.SimulationService;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.*;
 import pl.exceptionhandled.cosmicengine.simulation.command.GravityTrajectoryCommand;
 import pl.exceptionhandled.cosmicengine.simulation.mapper.GravityTrajectoryCommandMapper;
+import pl.exceptionhandled.cosmicengine.simulation.mapper.GravityTrajectoryResponseMapper;
+import pl.exceptionhandled.cosmicengine.simulation.result.GravityTrajectoryResult;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class SimulationController {
     private final SimpleMotionSimulationService simpleMotionSimulationService;
     private final SimulationService simulationService;
     private final GravityTrajectoryCommandMapper gravityTrajectoryCommandMapper;
+    private final GravityTrajectoryResponseMapper gravityTrajectoryResponseMapper;
 
 
     @GetMapping("/simple-motion")
@@ -48,6 +51,8 @@ public class SimulationController {
     ) {
         GravityTrajectoryCommand command = gravityTrajectoryCommandMapper.toCommand(request);
 
-        return simulationService.simulateStaticCentralGravityTrajectory(command);
+        GravityTrajectoryResult result = simulationService.simulateStaticCentralGravityTrajectory(command);
+
+        return gravityTrajectoryResponseMapper.toResponse(result);
     }
 }

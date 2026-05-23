@@ -6,20 +6,14 @@ import pl.exceptionhandled.cosmicengine.physics.engine.PhysicsEngine;
 import pl.exceptionhandled.cosmicengine.physics.integrator.ConstantAccelerationStepIntegrator;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.BodyTrajectoryResponse;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.GravityTrajectoryRequest;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.GravityTrajectoryResponse;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.SimulationBodyRequest;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.TrajectoryFrameResponse;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DRequest;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DResponse;
 import pl.exceptionhandled.cosmicengine.simulation.command.GravityTrajectoryCommand;
 import pl.exceptionhandled.cosmicengine.simulation.factory.BodySimulationFrameFactory;
-import pl.exceptionhandled.cosmicengine.simulation.mapper.SimulationBodyMapper;
-import pl.exceptionhandled.cosmicengine.simulation.mapper.TrajectoryFrameMapper;
+import pl.exceptionhandled.cosmicengine.simulation.model.BodySimulationFrame;
 import pl.exceptionhandled.cosmicengine.simulation.model.GravitySimulationModel;
 import pl.exceptionhandled.cosmicengine.simulation.model.IntegratorType;
 import pl.exceptionhandled.cosmicengine.simulation.policy.MostMassiveBodySelectionPolicy;
+import pl.exceptionhandled.cosmicengine.simulation.result.BodyTrajectoryResult;
+import pl.exceptionhandled.cosmicengine.simulation.result.GravityTrajectoryResult;
 
 import java.util.List;
 
@@ -29,11 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SimulationServiceTest {
 
     private static final double EPSILON = 0.000001;
-
-    private final SimulationBodyMapper simulationBodyMapper = new SimulationBodyMapper();
-
-    private final TrajectoryFrameMapper trajectoryFrameMapper =
-            new TrajectoryFrameMapper(simulationBodyMapper);
 
     private final PhysicsEngine physicsEngine = new PhysicsEngine(
             new ConstantAccelerationStepIntegrator()
@@ -47,9 +36,7 @@ class SimulationServiceTest {
 
     private final SimulationService simulationService = new SimulationService(
             simulationLoop,
-            new MostMassiveBodySelectionPolicy(),
-            simulationBodyMapper,
-            trajectoryFrameMapper
+            new MostMassiveBodySelectionPolicy()
     );
 
     @Test
@@ -64,13 +51,13 @@ class SimulationServiceTest {
                 5
         );
 
-        GravityTrajectoryResponse response = simulationService.simulateStaticCentralGravityTrajectory(command);
+        GravityTrajectoryResult result = simulationService.simulateStaticCentralGravityTrajectory(command);
 
-        assertEquals(GravitySimulationModel.STATIC_CENTRAL_BODY, response.model());
-        assertEquals(IntegratorType.CONSTANT_ACCELERATION_STEP, response.integrator());
-        assertEquals(1, response.centralBodyIndex());
-        assertEquals(new Vector2DResponse(0.0, 0.0), response.centralBodyPosition());
-        assertEquals(2, response.trajectories().size());
+        assertEquals(GravitySimulationModel.STATIC_CENTRAL_BODY, result.model());
+        assertEquals(IntegratorType.CONSTANT_ACCELERATION_STEP, result.integrator());
+        assertEquals(1, result.centralBodyIndex());
+        assertEquals(new Vector2D(0.0, 0.0), result.centralBodyPosition());
+        assertEquals(2, result.trajectories().size());
     }
 
     @Test
@@ -85,15 +72,15 @@ class SimulationServiceTest {
                 5
         );
 
-        GravityTrajectoryResponse response = simulationService.simulateStaticCentralGravityTrajectory(command);
+        GravityTrajectoryResult result = simulationService.simulateStaticCentralGravityTrajectory(command);
 
-        BodyTrajectoryResponse planetTrajectory = response.trajectories().getFirst();
+        BodyTrajectoryResult planetTrajectory = result.trajectories().getFirst();
 
-        TrajectoryFrameResponse firstFrame = planetTrajectory.frames().getFirst();
-        TrajectoryFrameResponse lastFrame = planetTrajectory.frames().getLast();
+        BodySimulationFrame firstFrame = planetTrajectory.frames().getFirst();
+        BodySimulationFrame lastFrame = planetTrajectory.frames().getLast();
 
-        Vector2DResponse firstPosition = firstFrame.position();
-        Vector2DResponse lastPosition = lastFrame.position();
+        Vector2D firstPosition = firstFrame.position();
+        Vector2D lastPosition = lastFrame.position();
 
         assertEquals(0, planetTrajectory.bodyIndex());
         assertEquals(6, planetTrajectory.frames().size());
@@ -106,6 +93,14 @@ class SimulationServiceTest {
 
         assertTrue(lastPosition.x() < firstPosition.x());
         assertTrue(lastPosition.y() > firstPosition.y());
+
+        assertEquals(0.0, firstFrame.velocity().x(), EPSILON);
+        assertEquals(1.0, firstFrame.velocity().y(), EPSILON);
+        assertEquals(0.0, firstFrame.acceleration().x(), EPSILON);
+        assertEquals(0.0, firstFrame.acceleration().y(), EPSILON);
+
+        assertTrue(lastFrame.velocity().x() < firstFrame.velocity().x());
+        assertTrue(lastFrame.acceleration().x() < 0.0);
     }
 
     private Body body(

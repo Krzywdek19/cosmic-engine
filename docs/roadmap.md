@@ -28,7 +28,7 @@ Status: in progress
 
 ---
 
-## Stage 1 — Material Point Physics
+## Stage 1 - Material Point Physics
 
 Goal: simulate the motion of a single body.
 
@@ -64,7 +64,7 @@ A point moves on the screen with configurable velocity and mass.
 
 ---
 
-## Stage 2 — Newtonian Gravity
+## Stage 2 - Newtonian Gravity
 
 Goal: add gravitational attraction between two bodies.
 
@@ -95,7 +95,7 @@ A planet orbits a star.
 
 ---
 
-## Stage 3 — N-body Simulation
+## Stage 3 - N-body Simulation
 
 Goal: simulate multiple bodies interacting gravitationally.
 
@@ -120,7 +120,7 @@ A small custom planetary system.
 
 ---
 
-## Stage 4 — Visualization and Interaction
+## Stage 4 - Visualization and Interaction
 
 Goal: make the simulation interactive and presentable.
 
@@ -141,7 +141,7 @@ An application suitable for portfolio presentation.
 
 ---
 
-## Stage 5 — Backend Persistence
+## Stage 5 - Backend Persistence
 
 Goal: add backend features useful for a real application.
 
@@ -161,7 +161,7 @@ Users can save and replay their own planetary systems.
 
 ---
 
-## Stage 6 — Better Numerical Physics
+## Stage 6 - Better Numerical Physics
 
 Goal: improve physical accuracy.
 
@@ -186,7 +186,7 @@ The project becomes a serious physics learning tool.
 
 ---
 
-## Stage 7 — Black Holes
+## Stage 7 - Black Holes
 
 Goal: introduce simplified black hole simulations.
 
@@ -213,7 +213,7 @@ An interactive black hole model.
 
 ---
 
-## Stage 8 — Relativity Extensions
+## Stage 8 - Relativity Extensions
 
 Goal: gradually introduce simplified general relativity concepts.
 
