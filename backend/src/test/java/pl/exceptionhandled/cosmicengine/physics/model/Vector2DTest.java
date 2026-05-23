@@ -71,15 +71,6 @@ class Vector2DTest {
     }
 
     @Test
-    void shouldReturnZeroVectorWhenNormalizingZeroVector() {
-        Vector2D a = new Vector2D(0, 0);
-
-        Vector2D result = a.normalize();
-
-        assertEquals(new Vector2D(0, 0), result);
-    }
-
-    @Test
     void shouldThrowExceptionWhenNormalizingZeroVector() {
         assertThrows(
                 IllegalStateException.class,
