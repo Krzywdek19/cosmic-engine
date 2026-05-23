@@ -59,4 +59,17 @@ class NewtonianGravityCalculatorTest {
         assertEquals(expected.x(), actual.x(), EPSILON);
         assertEquals(expected.y(), actual.y(), EPSILON);
     }
+
+    @Test
+    void shouldThrowExceptionWhenGravitationalConstantIsNotPositive() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new NewtonianGravityCalculator(0.0)
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new NewtonianGravityCalculator(-1.0)
+        );
+    }
 }

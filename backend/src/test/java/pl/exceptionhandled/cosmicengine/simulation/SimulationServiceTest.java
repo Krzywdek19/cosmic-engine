@@ -22,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SimulationServiceTest {
 
-    private final PhysicsEngine physicsEngine = new PhysicsEngine(new NewtonianGravityCalculator(1.0), new ConstantAccelerationStepIntegrator());
-    private final SimulationLoop simulationLoop = new SimulationLoop(physicsEngine);
+    private final PhysicsEngine physicsEngine = new PhysicsEngine(new ConstantAccelerationStepIntegrator());
+    private final SimulationLoop simulationLoop = new SimulationLoop(physicsEngine,new NewtonianGravityCalculator(1.0));
     private final SimulationService simulationService = new SimulationService(simulationLoop, new MostMassiveBodySelectionPolicy(), new SimulationBodyMapper());
 
     @Test
