@@ -62,12 +62,12 @@ class Vector2DTest {
 
     @Test
     void shouldNormalizeVector() {
-        Vector2D a = new Vector2D(3, 4);
+        Vector2D vector = new Vector2D(3.0, 4.0);
 
-        Vector2D result = a.normalize();
+        Vector2D normalized = vector.normalize();
 
-        assertEquals(0.6, result.x(), 0.000001);
-        assertEquals(0.8, result.y(), 0.000001);
+        assertEquals(0.6, normalized.x(), 0.000001);
+        assertEquals(0.8, normalized.y(), 0.000001);
     }
 
     @Test
@@ -77,5 +77,20 @@ class Vector2DTest {
         Vector2D result = a.normalize();
 
         assertEquals(new Vector2D(0, 0), result);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenNormalizingZeroVector() {
+        assertThrows(
+                IllegalStateException.class,
+                Vector2D.ZERO::normalize
+        );
+    }
+
+    @Test
+    void shouldReturnZeroWhenNormalizeOrZeroIsCalledOnZeroVector() {
+        Vector2D normalized = Vector2D.ZERO.normalizeOrZero();
+
+        assertEquals(Vector2D.ZERO, normalized);
     }
 }

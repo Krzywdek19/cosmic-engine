@@ -33,12 +33,22 @@ public record Vector2D(double x, double y) {
     }
 
     public Vector2D normalize() {
-        double length = magnitude();
+        double magnitude = magnitude();
 
-        if (length == 0) {
-            return new Vector2D(0, 0);
+        if (magnitude == 0.0) {
+            throw new IllegalStateException("Cannot normalize zero vector");
         }
 
-        return this.divide(length);
+        return divide(magnitude);
+    }
+
+    public Vector2D normalizeOrZero() {
+        double magnitude = magnitude();
+
+        if (magnitude == 0.0) {
+            return ZERO;
+        }
+
+        return divide(magnitude);
     }
 }
