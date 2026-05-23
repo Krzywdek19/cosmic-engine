@@ -1,7 +1,7 @@
 package pl.exceptionhandled.cosmicengine.simulation;
 
 import org.junit.jupiter.api.Test;
-import pl.exceptionhandled.cosmicengine.physics.GravityCalculator;
+import pl.exceptionhandled.cosmicengine.physics.NewtonianGravityCalculator;
 import pl.exceptionhandled.cosmicengine.physics.engine.PhysicsEngine;
 import pl.exceptionhandled.cosmicengine.physics.integrator.ConstantAccelerationStepIntegrator;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.BodyTrajectoryResponse;
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SimulationServiceTest {
 
-    private final PhysicsEngine physicsEngine = new PhysicsEngine(new GravityCalculator(1.0), new ConstantAccelerationStepIntegrator());
+    private final PhysicsEngine physicsEngine = new PhysicsEngine(new NewtonianGravityCalculator(1.0), new ConstantAccelerationStepIntegrator());
     private final SimulationLoop simulationLoop = new SimulationLoop(physicsEngine);
     private final SimulationService simulationService = new SimulationService(simulationLoop, new MostMassiveBodySelectionPolicy(), new SimulationBodyMapper());
 

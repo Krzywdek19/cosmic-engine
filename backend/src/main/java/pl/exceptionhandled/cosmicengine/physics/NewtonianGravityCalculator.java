@@ -5,14 +5,14 @@ import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 
 @Component
-public class GravityCalculator {
+public class NewtonianGravityCalculator {
     private final double gravitationalConstant;
 
-    public GravityCalculator(double gravitationalConstant) {
+    public NewtonianGravityCalculator(double gravitationalConstant) {
         this.gravitationalConstant = gravitationalConstant;
     }
 
-    public GravityCalculator() {
+    public NewtonianGravityCalculator() {
         this.gravitationalConstant = 6.67430 * Math.pow(10, -11);
     }
 

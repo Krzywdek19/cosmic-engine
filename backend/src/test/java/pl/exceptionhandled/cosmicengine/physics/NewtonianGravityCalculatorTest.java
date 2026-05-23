@@ -7,18 +7,18 @@ import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class GravityCalculatorTest {
+class NewtonianGravityCalculatorTest {
 
     private static final double EPSILON = 0.000001;
 
-    private final GravityCalculator gravityCalculator = new GravityCalculator(1.0);
+    private final NewtonianGravityCalculator newtonianGravityCalculator = new NewtonianGravityCalculator(1.0);
 
     @Test
     void shouldCalculateGravitationalForceBetweenTwoBodies() {
         Body affectedBody = body(10.0, 0.0, 0.0);
         Body attractingBody = body(20.0, 10.0, 0.0);
 
-        Vector2D force = gravityCalculator.calculateForce(affectedBody, attractingBody);
+        Vector2D force = newtonianGravityCalculator.calculateForce(affectedBody, attractingBody);
 
         assertVectorEquals(new Vector2D(2.0, 0.0), force);
     }
@@ -30,7 +30,7 @@ class GravityCalculatorTest {
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> gravityCalculator.calculateForce(affectedBody, attractingBody)
+                () -> newtonianGravityCalculator.calculateForce(affectedBody, attractingBody)
         );
     }
 
@@ -39,8 +39,8 @@ class GravityCalculatorTest {
         Body aBody = body(10.0, 0.0, 0.0);
         Body bBody = body(20.0, 10.0, 0.0);
 
-        Vector2D forceOnA = gravityCalculator.calculateForce(aBody, bBody);
-        Vector2D forceOnB = gravityCalculator.calculateForce(bBody, aBody);
+        Vector2D forceOnA = newtonianGravityCalculator.calculateForce(aBody, bBody);
+        Vector2D forceOnB = newtonianGravityCalculator.calculateForce(bBody, aBody);
 
         assertEquals(-forceOnA.x(), forceOnB.x(), EPSILON);
         assertEquals(-forceOnA.y(), forceOnB.y(), EPSILON);

@@ -1,7 +1,7 @@
 package pl.exceptionhandled.cosmicengine.simulation;
 
 import org.junit.jupiter.api.Test;
-import pl.exceptionhandled.cosmicengine.physics.GravityCalculator;
+import pl.exceptionhandled.cosmicengine.physics.NewtonianGravityCalculator;
 import pl.exceptionhandled.cosmicengine.physics.engine.PhysicsEngine;
 import pl.exceptionhandled.cosmicengine.physics.integrator.ConstantAccelerationStepIntegrator;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
@@ -16,7 +16,7 @@ class SimulationLoopTest {
     private final PhysicsEngine physicsEngine = new PhysicsEngine(new ConstantAccelerationStepIntegrator());
     private final SimulationLoop simulationLoop = new SimulationLoop(
             physicsEngine,
-            new GravityCalculator(1.0)
+            new NewtonianGravityCalculator(1.0)
     );
 
     @Test

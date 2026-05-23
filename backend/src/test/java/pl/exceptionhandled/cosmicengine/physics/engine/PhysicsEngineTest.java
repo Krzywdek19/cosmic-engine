@@ -1,7 +1,6 @@
 package pl.exceptionhandled.cosmicengine.physics.engine;
 
 import org.junit.jupiter.api.Test;
-import pl.exceptionhandled.cosmicengine.physics.GravityCalculator;
 import pl.exceptionhandled.cosmicengine.physics.integrator.ConstantAccelerationStepIntegrator;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
