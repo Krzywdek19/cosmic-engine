@@ -12,6 +12,36 @@ The goal is to build an interactive 2D/3D simulation engine that starts with New
 - Visualize orbital mechanics and physical quantities
 - Add tests, documentation, CI/CD and deployment workflow
 
+## Physics Model
+
+The current backend uses a simplified Newtonian gravity simulation model.
+
+At this stage:
+
+- the most massive body is selected as the static central body,
+- the central body does not move,
+- other bodies are simulated relative to the central body,
+- secondary bodies do not attract each other,
+- the project does not yet implement full N-body simulation.
+
+Current gravity simulation model:
+
+```text
+STATIC_CENTRAL_BODY
+```
+
+Current motion integrator:
+
+```text
+CONSTANT_ACCELERATION_STEP
+```
+
+More details are described in:
+
+```text
+backend/docs/physics-model.md
+```
+
 ## First Milestone
 
 Build a simple 2D simulation where a planet orbits a star using Newtonian gravity.
@@ -21,7 +51,9 @@ Scope:
 - Vector2D
 - Body
 - PhysicsEngine
-- GravityCalculator
+- NewtonianGravityCalculator
+- MotionIntegrator
+- ConstantAccelerationStepIntegrator
 - SimulationLoop
 - Basic frontend visualization
 - Unit tests
@@ -29,7 +61,7 @@ Scope:
 
 ## Tech Stack
 
-- Java
+- Java 21
 - Spring Boot
 - React
 - Canvas API
@@ -46,8 +78,6 @@ To run the project locally, you need:
 - Maven Wrapper included in the backend project
 - Node.js 22
 - Docker and Docker Compose
-
-If the backend was generated with Java 17, use Java 17 instead of Java 21.
 
 ---
 
@@ -213,18 +243,26 @@ Workflow file:
 - Force
 - Mass
 - Newton's second law
+- Basic motion simulation
+- Simple motion REST API
+- Trajectory generation
 
 ### Stage 2 — Newtonian Gravity
 
-- Gravitational force
-- Star and planet simulation
-- Stable orbit
+- Newtonian gravitational force
+- Static central body gravity model
+- Star and planet trajectory simulation
+- Gravity trajectory REST API
+- Basic orbital motion visualization
+- Preparation for future N-body simulation
 
 ### Stage 3 — N-body Simulation
 
 - Multiple interacting bodies
 - Moons, planets, comets
+- Mutual gravitational interactions
 - Numerical stability
+- Energy and momentum checks
 
 ### Stage 4 — Visualization and Interaction
 
@@ -233,6 +271,7 @@ Workflow file:
 - Orbit trails
 - Pause/start/reset
 - Editable body parameters
+- Charts for velocity, energy and distance
 
 ### Stage 5 — Backend Persistence
 
@@ -240,6 +279,7 @@ Workflow file:
 - Users
 - Public/private simulations
 - REST API
+- Simulation history
 
 ### Stage 6 — Better Numerical Physics
 
@@ -247,6 +287,7 @@ Workflow file:
 - Verlet
 - Runge-Kutta
 - Energy conservation
+- Integrator comparison
 
 ### Stage 7 — Black Holes
 
@@ -266,7 +307,7 @@ Workflow file:
 
 ## Current Status
 
-Stage 0 is focused on project foundation.
+The backend foundation is complete and the project is currently focused on Stage 2 — Newtonian Gravity.
 
 Completed:
 
@@ -274,23 +315,42 @@ Completed:
 - README
 - backend Spring Boot app
 - health check endpoint
-- backend test
+- backend tests
 - frontend React app
 - Docker setup
 - GitHub Actions CI
-- roadmap documentation
-- architecture documentation
+- Maven Wrapper
+- Java 21 standardization
+- global API error handling
+- request safety limits
+- Vector2D model
+- Body model
+- PhysicsEngine
+- NewtonianGravityCalculator
+- configurable gravitational constant
+- MotionIntegrator abstraction
+- ConstantAccelerationStepIntegrator
+- SimulationLoop
+- SimpleMotionSimulationService
+- static central gravity trajectory endpoint
+- gravity simulation metadata in API responses
+- physics model documentation
 
-Next stage:
+Current simulation model:
 
 ```text
-Stage 1 — Material Point Physics
+STATIC_CENTRAL_BODY
 ```
 
-The next goal is to implement the first physics model:
+Current integrator:
 
-- Vector2D
-- Body
-- PhysicsEngine
-- simulation step
-- unit tests for movement
+```text
+CONSTANT_ACCELERATION_STEP
+```
+
+Next goals:
+
+- improve domain validation for Body
+- add clearer simulation response frames
+- prepare the codebase for full N-body simulation
+- add better numerical integrators such as Euler, Verlet and Runge-Kutta
