@@ -58,4 +58,95 @@ class BodyTest {
 
         assertEquals(new Vector2D(10, 20), body.getPosition());
     }
+
+    @Test
+    void shouldThrowExceptionWhenMassIsNotFinite() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> body(Double.NaN)
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> body(Double.POSITIVE_INFINITY)
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPositionIsNull() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Body(
+                        1.0,
+                        null,
+                        Vector2D.ZERO,
+                        Vector2D.ZERO
+                )
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenVelocityIsNull() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Body(
+                        1.0,
+                        Vector2D.ZERO,
+                        null,
+                        Vector2D.ZERO
+                )
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAccelerationIsNull() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Body(
+                        1.0,
+                        Vector2D.ZERO,
+                        Vector2D.ZERO,
+                        null
+                )
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPositionIsSetToNull() {
+        Body body = body(1.0);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> body.setPosition(null)
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenVelocityIsSetToNull() {
+        Body body = body(1.0);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> body.setVelocity(null)
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAccelerationIsSetToNull() {
+        Body body = body(1.0);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> body.setAcceleration(null)
+        );
+    }
+
+    private Body body(double mass) {
+        return new Body(
+                mass,
+                Vector2D.ZERO,
+                Vector2D.ZERO,
+                Vector2D.ZERO
+        );
+    }
 }
