@@ -13,8 +13,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SimulationLoopTest {
 
-    private final PhysicsEngine physicsEngine = new PhysicsEngine(new GravityCalculator(1.0), new ConstantAccelerationStepIntegrator());
-    private final SimulationLoop simulationLoop = new SimulationLoop(physicsEngine);
+    private final PhysicsEngine physicsEngine = new PhysicsEngine(new ConstantAccelerationStepIntegrator());
+    private final SimulationLoop simulationLoop = new SimulationLoop(
+            physicsEngine,
+            new GravityCalculator(1.0)
+    );
 
     @Test
     void shouldRunSimulationForGivenNumberOfSteps() {
@@ -120,8 +123,8 @@ class SimulationLoopTest {
 
         assertEquals(6, trajectory.size());
 
-        Vector2D firstPosition = trajectory.get(0);
-        Vector2D lastPosition = trajectory.get(trajectory.size() - 1);
+        Vector2D firstPosition = trajectory.getFirst();
+        Vector2D lastPosition = trajectory.getLast();
 
 
         assertEquals(new Vector2D(10.0, 0.0), firstPosition);

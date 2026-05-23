@@ -2,6 +2,7 @@ package pl.exceptionhandled.cosmicengine.simulation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import pl.exceptionhandled.cosmicengine.physics.GravityCalculator;
 import pl.exceptionhandled.cosmicengine.physics.engine.PhysicsEngine;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
@@ -14,6 +15,7 @@ import java.util.List;
 public class SimulationLoop {
 
     private final PhysicsEngine physicsEngine;
+    private final GravityCalculator gravityCalculator;
 
     public void run(Body body, double deltaTime, int steps) {
         validateSteps(steps);
@@ -25,20 +27,23 @@ public class SimulationLoop {
 
     public void runStaticCentralGravity(
             Body affectedBody,
-            Body attractingBody,
+            Body centralBody,
             double deltaTime,
             int steps
     ) {
         validateSteps(steps);
 
         for (int i = 0; i < steps; i++) {
-            physicsEngine.updateInStaticGravityField(affectedBody, attractingBody, deltaTime);
+            Vector2D gravityForce = gravityCalculator.calculateForce(affectedBody, centralBody);
+
+            physicsEngine.applyForces(affectedBody, List.of(gravityForce));
+            physicsEngine.update(affectedBody, deltaTime);
         }
     }
 
     public List<Vector2D> runStaticCentralGravityTrajectory(
             Body affectedBody,
-            Body attractingBody,
+            Body centralBody,
             double deltaTime,
             int steps
     ) {
@@ -48,7 +53,11 @@ public class SimulationLoop {
         trajectory.add(affectedBody.getPosition());
 
         for (int i = 0; i < steps; i++) {
-            physicsEngine.updateInStaticGravityField(affectedBody, attractingBody, deltaTime);
+            Vector2D gravityForce = gravityCalculator.calculateForce(affectedBody, centralBody);
+
+            physicsEngine.applyForces(affectedBody, List.of(gravityForce));
+            physicsEngine.update(affectedBody, deltaTime);
+
             trajectory.add(affectedBody.getPosition());
         }
 

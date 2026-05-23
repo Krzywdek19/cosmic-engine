@@ -15,7 +15,9 @@ class PhysicsEngineTest {
 
     private static final double EPSILON = 0.000001;
 
-    private final PhysicsEngine physicsEngine = new PhysicsEngine(new GravityCalculator(1.0), new ConstantAccelerationStepIntegrator());
+    private final PhysicsEngine physicsEngine = new PhysicsEngine(
+            new ConstantAccelerationStepIntegrator()
+    );
 
     @Test
     void shouldUpdateBodyPositionAndVelocity() {
@@ -76,29 +78,6 @@ class PhysicsEngineTest {
         physicsEngine.applyTotalForce(body, new Vector2D(0.0, 6.0));
 
         assertVectorEquals(new Vector2D(0.0, 3.0), body.getAcceleration());
-    }
-
-    @Test
-    void shouldUpdateBodyUsingGravityForce() {
-        Body planet = body(
-                10.0,
-                0.0, 0.0,
-                0.0, 0.0,
-                0.0, 0.0
-        );
-
-        Body sun = body(
-                20.0,
-                10.0, 0.0,
-                0.0, 0.0,
-                0.0, 0.0
-        );
-
-        Body updatedPlanet = physicsEngine.updateInStaticGravityField(planet, sun, 1.0);
-
-        assertVectorEquals(new Vector2D(0.2, 0.0), updatedPlanet.getAcceleration());
-        assertVectorEquals(new Vector2D(0.2, 0.0), updatedPlanet.getVelocity());
-        assertVectorEquals(new Vector2D(0.1, 0.0), updatedPlanet.getPosition());
     }
 
     @Test

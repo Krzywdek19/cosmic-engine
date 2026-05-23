@@ -2,7 +2,6 @@ package pl.exceptionhandled.cosmicengine.physics.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import pl.exceptionhandled.cosmicengine.physics.GravityCalculator;
 import pl.exceptionhandled.cosmicengine.physics.integrator.MotionIntegrator;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
@@ -13,7 +12,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PhysicsEngine {
 
-    private final GravityCalculator gravityCalculator;
     private final MotionIntegrator motionIntegrator;
 
     public Body update(Body body, double deltaTime) {
@@ -30,19 +28,5 @@ public class PhysicsEngine {
     public void applyTotalForce(Body body, Vector2D totalForce) {
         Vector2D acceleration = totalForce.divide(body.getMass());
         body.setAcceleration(acceleration);
-    }
-
-    public Body updateInStaticGravityField(
-            Body affectedBody,
-            Body attractingBody,
-            double deltaTime
-    ) {
-        Vector2D gravityForce = gravityCalculator.calculateForce(affectedBody, attractingBody);
-
-        applyForces(affectedBody, List.of(gravityForce));
-
-        update(affectedBody, deltaTime);
-
-        return affectedBody;
     }
 }

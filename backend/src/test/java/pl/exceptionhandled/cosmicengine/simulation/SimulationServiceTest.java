@@ -60,11 +60,11 @@ class SimulationServiceTest {
 
         GravityTrajectoryResponse response = simulationService.simulateStaticCentralGravityTrajectory(request);
 
-        BodyTrajectoryResponse planetTrajectory = response.trajectories().get(0);
+        BodyTrajectoryResponse planetTrajectory = response.trajectories().getFirst();
 
-        Vector2DResponse firstPosition = planetTrajectory.trajectory().get(0);
+        Vector2DResponse firstPosition = planetTrajectory.trajectory().getFirst();
         Vector2DResponse lastPosition = planetTrajectory.trajectory()
-                .get(planetTrajectory.trajectory().size() - 1);
+                .getLast();
 
         assertEquals(0, planetTrajectory.bodyIndex());
         assertEquals(6, planetTrajectory.trajectory().size());
