@@ -3,10 +3,9 @@ package pl.exceptionhandled.cosmicengine.simulation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.BodyTrajectoryResponse;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.GravityTrajectoryRequest;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.GravityTrajectoryResponse;
-import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DResponse;
+import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
+import pl.exceptionhandled.cosmicengine.simulation.api.dto.*;
+import pl.exceptionhandled.cosmicengine.simulation.mapper.TrajectoryFrameMapper;
 import pl.exceptionhandled.cosmicengine.simulation.model.GravitySimulationModel;
 import pl.exceptionhandled.cosmicengine.simulation.model.IntegratorType;
 import pl.exceptionhandled.cosmicengine.simulation.policy.CentralBodySelectionPolicy;
@@ -22,6 +21,7 @@ public class SimulationService {
     private final SimulationLoop simulationLoop;
     private final CentralBodySelectionPolicy centralBodySelectionPolicy;
     private final SimulationBodyMapper simulationBodyMapper;
+    private final TrajectoryFrameMapper trajectoryFrameMapper;
 
     public GravityTrajectoryResponse simulateStaticCentralGravityTrajectory(GravityTrajectoryRequest request) {
         List<Body> bodies = request.bodies()
@@ -42,20 +42,22 @@ public class SimulationService {
 
             Body affectedBody = bodies.get(i);
 
-            List<Vector2DResponse> trajectory = simulationLoop.runStaticCentralGravityTrajectory(
-                            affectedBody,
-                            centralBody,
-                            request.deltaTime(),
-                            request.steps()
-                    )
-                    .stream()
-                    .map(simulationBodyMapper::toResponse)
-                    .toList();
+            List<Vector2D> trajectory = simulationLoop.runStaticCentralGravityTrajectory(
+                    affectedBody,
+                    centralBody,
+                    request.deltaTime(),
+                    request.steps()
+            );
+
+            List<TrajectoryFrameResponse> frames = trajectoryFrameMapper.toFrames(
+                    trajectory,
+                    request.deltaTime()
+            );
 
             trajectories.add(new BodyTrajectoryResponse(
                     i,
                     affectedBody.getMass(),
-                    trajectory
+                    frames
             ));
         }
 

@@ -7,11 +7,11 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThan;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -64,24 +64,24 @@ class SimulationControllerTest {
     @Test
     void shouldReturnBadRequestWhenMassIsNegative() throws Exception {
         String requestBody = """
-            {
-              "mass": -2.0,
-              "position": {
-                "x": 0.0,
-                "y": 0.0
-              },
-              "velocity": {
-                "x": 0.0,
-                "y": 0.0
-              },
-              "force": {
-                "x": 10.0,
-                "y": 0.0
-              },
-              "deltaTime": 2.0,
-              "steps": 1
-            }
-            """;
+                {
+                  "mass": -2.0,
+                  "position": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "velocity": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "force": {
+                    "x": 10.0,
+                    "y": 0.0
+                  },
+                  "deltaTime": 2.0,
+                  "steps": 1
+                }
+                """;
 
         mockMvc.perform(post("/api/v1/simulations/simple-motion")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -96,35 +96,35 @@ class SimulationControllerTest {
     @Test
     void shouldReturnBadRequestWhenGravityBodiesHaveSamePosition() throws Exception {
         String requestBody = """
-            {
-              "bodies": [
                 {
-                  "mass": 100.0,
-                  "position": {
-                    "x": 0.0,
-                    "y": 0.0
-                  },
-                  "velocity": {
-                    "x": 0.0,
-                    "y": 0.0
-                  }
-                },
-                {
-                  "mass": 1.0,
-                  "position": {
-                    "x": 0.0,
-                    "y": 0.0
-                  },
-                  "velocity": {
-                    "x": 0.0,
-                    "y": 1.0
-                  }
+                  "bodies": [
+                    {
+                      "mass": 100.0,
+                      "position": {
+                        "x": 0.0,
+                        "y": 0.0
+                      },
+                      "velocity": {
+                        "x": 0.0,
+                        "y": 0.0
+                      }
+                    },
+                    {
+                      "mass": 1.0,
+                      "position": {
+                        "x": 0.0,
+                        "y": 0.0
+                      },
+                      "velocity": {
+                        "x": 0.0,
+                        "y": 1.0
+                      }
+                    }
+                  ],
+                  "deltaTime": 1.0,
+                  "steps": 1
                 }
-              ],
-              "deltaTime": 1.0,
-              "steps": 1
-            }
-            """;
+                """;
 
         mockMvc.perform(post("/api/v1/simulations/gravity/trajectory")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -138,24 +138,24 @@ class SimulationControllerTest {
     @Test
     void shouldRunSimpleMotionTrajectorySimulation() throws Exception {
         String requestBody = """
-            {
-              "mass": 2.0,
-              "position": {
-                "x": 0.0,
-                "y": 0.0
-              },
-              "velocity": {
-                "x": 0.0,
-                "y": 0.0
-              },
-              "force": {
-                "x": 10.0,
-                "y": 0.0
-              },
-              "deltaTime": 1.0,
-              "steps": 3
-            }
-            """;
+                {
+                  "mass": 2.0,
+                  "position": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "velocity": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "force": {
+                    "x": 10.0,
+                    "y": 0.0
+                  },
+                  "deltaTime": 1.0,
+                  "steps": 3
+                }
+                """;
 
         mockMvc.perform(post("/api/v1/simulations/simple-motion/trajectory")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -179,24 +179,24 @@ class SimulationControllerTest {
     @Test
     void shouldReturnBadRequestWhenSimpleMotionStepsExceedLimit() throws Exception {
         String requestBody = """
-            {
-              "mass": 2.0,
-              "position": {
-                "x": 0.0,
-                "y": 0.0
-              },
-              "velocity": {
-                "x": 0.0,
-                "y": 0.0
-              },
-              "force": {
-                "x": 10.0,
-                "y": 0.0
-              },
-              "deltaTime": 1.0,
-              "steps": 10001
-            }
-            """;
+                {
+                  "mass": 2.0,
+                  "position": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "velocity": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "force": {
+                    "x": 10.0,
+                    "y": 0.0
+                  },
+                  "deltaTime": 1.0,
+                  "steps": 10001
+                }
+                """;
 
         mockMvc.perform(post("/api/v1/simulations/simple-motion/trajectory")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -209,35 +209,35 @@ class SimulationControllerTest {
     @Test
     void shouldReturnBadRequestWhenGravityTrajectoryStepsExceedLimit() throws Exception {
         String requestBody = """
-            {
-              "bodies": [
                 {
-                  "mass": 100.0,
-                  "position": {
-                    "x": 0.0,
-                    "y": 0.0
-                  },
-                  "velocity": {
-                    "x": 0.0,
-                    "y": 0.0
-                  }
-                },
-                {
-                  "mass": 1.0,
-                  "position": {
-                    "x": 10.0,
-                    "y": 0.0
-                  },
-                  "velocity": {
-                    "x": 0.0,
-                    "y": 1.0
-                  }
+                  "bodies": [
+                    {
+                      "mass": 100.0,
+                      "position": {
+                        "x": 0.0,
+                        "y": 0.0
+                      },
+                      "velocity": {
+                        "x": 0.0,
+                        "y": 0.0
+                      }
+                    },
+                    {
+                      "mass": 1.0,
+                      "position": {
+                        "x": 10.0,
+                        "y": 0.0
+                      },
+                      "velocity": {
+                        "x": 0.0,
+                        "y": 1.0
+                      }
+                    }
+                  ],
+                  "deltaTime": 1.0,
+                  "steps": 10001
                 }
-              ],
-              "deltaTime": 1.0,
-              "steps": 10001
-            }
-            """;
+                """;
 
         mockMvc.perform(post("/api/v1/simulations/gravity/trajectory")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -247,72 +247,50 @@ class SimulationControllerTest {
                 .andExpect(jsonPath("$.fieldErrors.steps").exists());
     }
 
-    private String gravityTrajectoryRequestWithBodiesCount(int bodiesCount) {
-        StringBuilder bodiesJson = new StringBuilder();
+    @Test
+    void shouldReturnBadRequestWhenGravityTrajectoryBodiesExceedLimit() throws Exception {
+        String requestBody = gravityTrajectoryRequestWithBodiesCount(51);
 
-        for (int i = 0; i < bodiesCount; i++) {
-            if (i > 0) {
-                bodiesJson.append(",");
-            }
-
-            bodiesJson.append("""
-                {
-                  "mass": %s,
-                  "position": {
-                    "x": %s,
-                    "y": 0.0
-                  },
-                  "velocity": {
-                    "x": 0.0,
-                    "y": 1.0
-                  }
-                }
-                """.formatted(100.0 + i, 10.0 + i));
-        }
-
-        return """
-            {
-              "bodies": [
-                %s
-              ],
-              "deltaTime": 1.0,
-              "steps": 1
-            }
-            """.formatted(bodiesJson);
+        mockMvc.perform(post("/api/v1/simulations/gravity/trajectory")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.fieldErrors.bodies").exists());
     }
 
     @Test
     void shouldRunGravityTrajectorySimulation() throws Exception {
         String requestBody = """
-            {
-              "bodies": [
                 {
-                  "mass": 1.0,
-                  "position": {
-                    "x": 10.0,
-                    "y": 0.0
-                  },
-                  "velocity": {
-                    "x": 0.0,
-                    "y": 1.0
-                  }
-                },
-                {
-                  "mass": 100.0,
-                  "position": {
-                    "x": 0.0,
-                    "y": 0.0
-                  },
-                  "velocity": {
-                    "x": 0.0,
-                    "y": 0.0
-                  }
+                  "bodies": [
+                    {
+                      "mass": 1.0,
+                      "position": {
+                        "x": 10.0,
+                        "y": 0.0
+                      },
+                      "velocity": {
+                        "x": 0.0,
+                        "y": 1.0
+                      }
+                    },
+                    {
+                      "mass": 100.0,
+                      "position": {
+                        "x": 0.0,
+                        "y": 0.0
+                      },
+                      "velocity": {
+                        "x": 0.0,
+                        "y": 0.0
+                      }
+                    }
+                  ],
+                  "deltaTime": 1.0,
+                  "steps": 3
                 }
-              ],
-              "deltaTime": 1.0,
-              "steps": 3
-            }
-            """;
+                """;
 
         mockMvc.perform(post("/api/v1/simulations/gravity/trajectory")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -326,53 +304,92 @@ class SimulationControllerTest {
                 .andExpect(jsonPath("$.trajectories.length()").value(1))
                 .andExpect(jsonPath("$.trajectories[0].bodyIndex").value(0))
                 .andExpect(jsonPath("$.trajectories[0].mass").value(1.0))
-                .andExpect(jsonPath("$.trajectories[0].trajectory.length()").value(4))
-                .andExpect(jsonPath("$.trajectories[0].trajectory[0].x").value(10.0))
-                .andExpect(jsonPath("$.trajectories[0].trajectory[0].y").value(0.0))
-                .andExpect(jsonPath("$.trajectories[0].trajectory[1].x").isNumber())
-                .andExpect(jsonPath("$.trajectories[0].trajectory[1].y").isNumber());
+                .andExpect(jsonPath("$.trajectories[0].frames.length()").value(4))
+                .andExpect(jsonPath("$.trajectories[0].frames[0].step").value(0))
+                .andExpect(jsonPath("$.trajectories[0].frames[0].time").value(0.0))
+                .andExpect(jsonPath("$.trajectories[0].frames[0].position.x").value(10.0))
+                .andExpect(jsonPath("$.trajectories[0].frames[0].position.y").value(0.0))
+                .andExpect(jsonPath("$.trajectories[0].frames[1].step").value(1))
+                .andExpect(jsonPath("$.trajectories[0].frames[1].time").value(1.0))
+                .andExpect(jsonPath("$.trajectories[0].frames[1].position.x").isNumber())
+                .andExpect(jsonPath("$.trajectories[0].frames[1].position.y").isNumber());
     }
 
     @Test
     void shouldCurveGravityTrajectoryTowardsAttractingBody() throws Exception {
         String requestBody = """
-            {
-              "bodies": [
                 {
-                  "mass": 1.0,
-                  "position": {
-                    "x": 10.0,
-                    "y": 0.0
-                  },
-                  "velocity": {
-                    "x": 0.0,
-                    "y": 1.0
-                  }
-                },
-                {
-                  "mass": 100.0,
-                  "position": {
-                    "x": 0.0,
-                    "y": 0.0
-                  },
-                  "velocity": {
-                    "x": 0.0,
-                    "y": 0.0
-                  }
+                  "bodies": [
+                    {
+                      "mass": 1.0,
+                      "position": {
+                        "x": 10.0,
+                        "y": 0.0
+                      },
+                      "velocity": {
+                        "x": 0.0,
+                        "y": 1.0
+                      }
+                    },
+                    {
+                      "mass": 100.0,
+                      "position": {
+                        "x": 0.0,
+                        "y": 0.0
+                      },
+                      "velocity": {
+                        "x": 0.0,
+                        "y": 0.0
+                      }
+                    }
+                  ],
+                  "deltaTime": 1.0,
+                  "steps": 1
                 }
-              ],
-              "deltaTime": 1.0,
-              "steps": 1
-            }
-            """;
+                """;
 
         mockMvc.perform(post("/api/v1/simulations/gravity/trajectory")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.trajectories[0].trajectory[0].x").value(10.0))
-                .andExpect(jsonPath("$.trajectories[0].trajectory[0].y").value(0.0))
-                .andExpect(jsonPath("$.trajectories[0].trajectory[1].x").value(lessThan(10.0)))
-                .andExpect(jsonPath("$.trajectories[0].trajectory[1].y").value(greaterThan(0.0)));
+                .andExpect(jsonPath("$.trajectories[0].frames.length()").value(2))
+                .andExpect(jsonPath("$.trajectories[0].frames[0].position.x").value(10.0))
+                .andExpect(jsonPath("$.trajectories[0].frames[0].position.y").value(0.0))
+                .andExpect(jsonPath("$.trajectories[0].frames[1].position.x").value(lessThan(10.0)))
+                .andExpect(jsonPath("$.trajectories[0].frames[1].position.y").value(greaterThan(0.0)));
+    }
+
+    private String gravityTrajectoryRequestWithBodiesCount(int bodiesCount) {
+        StringBuilder bodiesJson = new StringBuilder();
+
+        for (int i = 0; i < bodiesCount; i++) {
+            if (i > 0) {
+                bodiesJson.append(",");
+            }
+
+            bodiesJson.append("""
+                    {
+                      "mass": %s,
+                      "position": {
+                        "x": %s,
+                        "y": 0.0
+                      },
+                      "velocity": {
+                        "x": 0.0,
+                        "y": 1.0
+                      }
+                    }
+                    """.formatted(100.0 + i, 10.0 + i));
+        }
+
+        return """
+                {
+                  "bodies": [
+                    %s
+                  ],
+                  "deltaTime": 1.0,
+                  "steps": 1
+                }
+                """.formatted(bodiesJson);
     }
 }
