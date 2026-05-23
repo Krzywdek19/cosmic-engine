@@ -6,6 +6,7 @@ import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.*;
 import pl.exceptionhandled.cosmicengine.simulation.mapper.TrajectoryFrameMapper;
+import pl.exceptionhandled.cosmicengine.simulation.model.BodySimulationFrame;
 import pl.exceptionhandled.cosmicengine.simulation.model.GravitySimulationModel;
 import pl.exceptionhandled.cosmicengine.simulation.model.IntegratorType;
 import pl.exceptionhandled.cosmicengine.simulation.policy.CentralBodySelectionPolicy;
@@ -42,17 +43,14 @@ public class SimulationService {
 
             Body affectedBody = bodies.get(i);
 
-            List<Vector2D> trajectory = simulationLoop.runStaticCentralGravityTrajectory(
+            List<BodySimulationFrame> simulationFrames = simulationLoop.runStaticCentralGravityFrames(
                     affectedBody,
                     centralBody,
                     request.deltaTime(),
                     request.steps()
             );
 
-            List<TrajectoryFrameResponse> frames = trajectoryFrameMapper.toFrames(
-                    trajectory,
-                    request.deltaTime()
-            );
+            List<TrajectoryFrameResponse> frames = trajectoryFrameMapper.toResponses(simulationFrames);
 
             trajectories.add(new BodyTrajectoryResponse(
                     i,

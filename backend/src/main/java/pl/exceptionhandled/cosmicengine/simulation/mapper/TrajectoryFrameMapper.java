@@ -2,10 +2,9 @@ package pl.exceptionhandled.cosmicengine.simulation.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.TrajectoryFrameResponse;
+import pl.exceptionhandled.cosmicengine.simulation.model.BodySimulationFrame;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -14,20 +13,19 @@ public class TrajectoryFrameMapper {
 
     private final SimulationBodyMapper simulationBodyMapper;
 
-    public List<TrajectoryFrameResponse> toFrames(
-            List<Vector2D> trajectory,
-            double deltaTime
-    ) {
-        List<TrajectoryFrameResponse> frames = new ArrayList<>();
+    public List<TrajectoryFrameResponse> toResponses(List<BodySimulationFrame> frames) {
+        return frames.stream()
+                .map(this::toResponse)
+                .toList();
+    }
 
-        for (int i = 0; i < trajectory.size(); i++) {
-            frames.add(new TrajectoryFrameResponse(
-                    i,
-                    i * deltaTime,
-                    simulationBodyMapper.toResponse(trajectory.get(i))
-            ));
-        }
-
-        return frames;
+    private TrajectoryFrameResponse toResponse(BodySimulationFrame frame) {
+        return new TrajectoryFrameResponse(
+                frame.step(),
+                frame.time(),
+                simulationBodyMapper.toResponse(frame.position()),
+                simulationBodyMapper.toResponse(frame.velocity()),
+                simulationBodyMapper.toResponse(frame.acceleration())
+        );
     }
 }

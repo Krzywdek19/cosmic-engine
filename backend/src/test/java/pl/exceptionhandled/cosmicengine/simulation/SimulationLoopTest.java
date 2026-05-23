@@ -6,6 +6,7 @@ import pl.exceptionhandled.cosmicengine.physics.engine.PhysicsEngine;
 import pl.exceptionhandled.cosmicengine.physics.integrator.ConstantAccelerationStepIntegrator;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
+import pl.exceptionhandled.cosmicengine.simulation.factory.BodySimulationFrameFactory;
 
 import java.util.List;
 
@@ -16,7 +17,8 @@ class SimulationLoopTest {
     private final PhysicsEngine physicsEngine = new PhysicsEngine(new ConstantAccelerationStepIntegrator());
     private final SimulationLoop simulationLoop = new SimulationLoop(
             physicsEngine,
-            new NewtonianGravityCalculator(1.0)
+            new NewtonianGravityCalculator(1.0),
+            new BodySimulationFrameFactory()
     );
 
     @Test

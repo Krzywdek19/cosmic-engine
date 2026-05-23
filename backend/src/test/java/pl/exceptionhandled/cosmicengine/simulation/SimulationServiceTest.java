@@ -11,6 +11,7 @@ import pl.exceptionhandled.cosmicengine.simulation.api.dto.SimulationBodyRequest
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.TrajectoryFrameResponse;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DRequest;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DResponse;
+import pl.exceptionhandled.cosmicengine.simulation.factory.BodySimulationFrameFactory;
 import pl.exceptionhandled.cosmicengine.simulation.mapper.SimulationBodyMapper;
 import pl.exceptionhandled.cosmicengine.simulation.mapper.TrajectoryFrameMapper;
 import pl.exceptionhandled.cosmicengine.simulation.model.GravitySimulationModel;
@@ -37,7 +38,8 @@ class SimulationServiceTest {
 
     private final SimulationLoop simulationLoop = new SimulationLoop(
             physicsEngine,
-            new NewtonianGravityCalculator(1.0)
+            new NewtonianGravityCalculator(1.0),
+            new BodySimulationFrameFactory()
     );
 
     private final SimulationService simulationService = new SimulationService(

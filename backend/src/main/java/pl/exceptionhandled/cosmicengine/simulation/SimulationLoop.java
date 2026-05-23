@@ -6,6 +6,8 @@ import pl.exceptionhandled.cosmicengine.physics.NewtonianGravityCalculator;
 import pl.exceptionhandled.cosmicengine.physics.engine.PhysicsEngine;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
+import pl.exceptionhandled.cosmicengine.simulation.factory.BodySimulationFrameFactory;
+import pl.exceptionhandled.cosmicengine.simulation.model.BodySimulationFrame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +17,8 @@ import java.util.List;
 public class SimulationLoop {
 
     private final PhysicsEngine physicsEngine;
-    private final NewtonianGravityCalculator newtonianGravityCalculator;
+    private final NewtonianGravityCalculator gravityCalculator;
+    private final BodySimulationFrameFactory bodySimulationFrameFactory;
 
     public void run(Body body, double deltaTime, int steps) {
         validateSteps(steps);
@@ -34,7 +37,7 @@ public class SimulationLoop {
         validateSteps(steps);
 
         for (int i = 0; i < steps; i++) {
-            Vector2D gravityForce = newtonianGravityCalculator.calculateForce(affectedBody, centralBody);
+            Vector2D gravityForce = gravityCalculator.calculateForce(affectedBody, centralBody);
 
             physicsEngine.applyForces(affectedBody, List.of(gravityForce));
             physicsEngine.update(affectedBody, deltaTime);
@@ -53,7 +56,7 @@ public class SimulationLoop {
         trajectory.add(affectedBody.getPosition());
 
         for (int i = 0; i < steps; i++) {
-            Vector2D gravityForce = newtonianGravityCalculator.calculateForce(affectedBody, centralBody);
+            Vector2D gravityForce = gravityCalculator.calculateForce(affectedBody, centralBody);
 
             physicsEngine.applyForces(affectedBody, List.of(gravityForce));
             physicsEngine.update(affectedBody, deltaTime);
@@ -62,6 +65,29 @@ public class SimulationLoop {
         }
 
         return trajectory;
+    }
+
+    public List<BodySimulationFrame> runStaticCentralGravityFrames(
+            Body affectedBody,
+            Body centralBody,
+            double deltaTime,
+            int steps
+    ) {
+        validateSteps(steps);
+
+        List<BodySimulationFrame> frames = new ArrayList<>();
+        frames.add(bodySimulationFrameFactory.create(0, 0.0, affectedBody));
+
+        for (int i = 1; i <= steps; i++) {
+            Vector2D gravityForce = gravityCalculator.calculateForce(affectedBody, centralBody);
+
+            physicsEngine.applyForces(affectedBody, List.of(gravityForce));
+            physicsEngine.update(affectedBody, deltaTime);
+
+            frames.add(bodySimulationFrameFactory.create(i, i * deltaTime, affectedBody));
+        }
+
+        return frames;
     }
 
     private void validateSteps(int steps) {
