@@ -7,14 +7,22 @@ import pl.exceptionhandled.cosmicengine.physics.integrator.ConstantAccelerationS
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
 import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 import pl.exceptionhandled.cosmicengine.simulation.factory.BodySimulationFrameFactory;
+import pl.exceptionhandled.cosmicengine.simulation.model.BodySimulationFrame;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SimulationLoopTest {
 
-    private final PhysicsEngine physicsEngine = new PhysicsEngine(new ConstantAccelerationStepIntegrator());
+    private static final double EPSILON = 0.000001;
+
+    private final PhysicsEngine physicsEngine = new PhysicsEngine(
+            new ConstantAccelerationStepIntegrator()
+    );
+
     private final SimulationLoop simulationLoop = new SimulationLoop(
             physicsEngine,
             new NewtonianGravityCalculator(1.0),
@@ -51,7 +59,7 @@ class SimulationLoopTest {
     }
 
     @Test
-    void shouldRunSimulationWithGravityForOneStep() {
+    void shouldRunStaticCentralGravitySimulationForOneStep() {
         Body planet = body(
                 10.0,
                 0.0, 0.0,
@@ -68,18 +76,13 @@ class SimulationLoopTest {
 
         simulationLoop.runStaticCentralGravity(planet, sun, 1.0, 1);
 
-        assertEquals(0.1, planet.getPosition().x(), 0.000001);
-        assertEquals(0.0, planet.getPosition().y(), 0.000001);
-
-        assertEquals(0.2, planet.getVelocity().x(), 0.000001);
-        assertEquals(0.0, planet.getVelocity().y(), 0.000001);
-
-        assertEquals(0.2, planet.getAcceleration().x(), 0.000001);
-        assertEquals(0.0, planet.getAcceleration().y(), 0.000001);
+        assertVectorEquals(new Vector2D(0.1, 0.0), planet.getPosition());
+        assertVectorEquals(new Vector2D(0.2, 0.0), planet.getVelocity());
+        assertVectorEquals(new Vector2D(0.2, 0.0), planet.getAcceleration());
     }
 
     @Test
-    void shouldCurveMovingBodyTrajectoryUsingGravity() {
+    void shouldCurveMovingBodyTrajectoryUsingStaticCentralGravity() {
         Body planet = body(
                 10.0,
                 10.0, 0.0,
@@ -101,7 +104,7 @@ class SimulationLoopTest {
     }
 
     @Test
-    void shouldReturnGravityTrajectory() {
+    void shouldReturnStaticCentralGravityFrames() {
         Body planet = body(
                 10.0,
                 10.0, 0.0,
@@ -110,29 +113,37 @@ class SimulationLoopTest {
         );
 
         Body sun = body(
-                20.0,
+                100.0,
                 0.0, 0.0,
                 0.0, 0.0,
                 0.0, 0.0
         );
 
-        List<Vector2D> trajectory = simulationLoop.runStaticCentralGravityTrajectory(
+        List<BodySimulationFrame> frames = simulationLoop.runStaticCentralGravityFrames(
                 planet,
                 sun,
                 1.0,
-                5
+                1
         );
 
-        assertEquals(6, trajectory.size());
+        assertEquals(2, frames.size());
 
-        Vector2D firstPosition = trajectory.getFirst();
-        Vector2D lastPosition = trajectory.getLast();
+        BodySimulationFrame initialFrame = frames.getFirst();
+        BodySimulationFrame nextFrame = frames.getLast();
 
+        assertEquals(0, initialFrame.step());
+        assertEquals(0.0, initialFrame.time(), EPSILON);
+        assertVectorEquals(new Vector2D(10.0, 0.0), initialFrame.position());
+        assertVectorEquals(new Vector2D(0.0, 1.0), initialFrame.velocity());
+        assertVectorEquals(Vector2D.ZERO, initialFrame.acceleration());
 
-        assertEquals(new Vector2D(10.0, 0.0), firstPosition);
+        assertEquals(1, nextFrame.step());
+        assertEquals(1.0, nextFrame.time(), EPSILON);
 
-        assertTrue(lastPosition.x() < firstPosition.x());
-        assertTrue(lastPosition.y() > firstPosition.y());
+        assertTrue(nextFrame.position().x() < initialFrame.position().x());
+        assertTrue(nextFrame.position().y() > initialFrame.position().y());
+        assertTrue(nextFrame.velocity().x() < initialFrame.velocity().x());
+        assertTrue(nextFrame.acceleration().x() < 0.0);
     }
 
     private Body body(
@@ -150,5 +161,10 @@ class SimulationLoopTest {
                 new Vector2D(velocityX, velocityY),
                 new Vector2D(accelerationX, accelerationY)
         );
+    }
+
+    private void assertVectorEquals(Vector2D expected, Vector2D actual) {
+        assertEquals(expected.x(), actual.x(), EPSILON);
+        assertEquals(expected.y(), actual.y(), EPSILON);
     }
 }

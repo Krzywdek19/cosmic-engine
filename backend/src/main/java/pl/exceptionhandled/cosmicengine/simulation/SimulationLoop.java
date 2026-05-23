@@ -44,29 +44,6 @@ public class SimulationLoop {
         }
     }
 
-    public List<Vector2D> runStaticCentralGravityTrajectory(
-            Body affectedBody,
-            Body centralBody,
-            double deltaTime,
-            int steps
-    ) {
-        validateSteps(steps);
-
-        List<Vector2D> trajectory = new ArrayList<>();
-        trajectory.add(affectedBody.getPosition());
-
-        for (int i = 0; i < steps; i++) {
-            Vector2D gravityForce = gravityCalculator.calculateForce(affectedBody, centralBody);
-
-            physicsEngine.applyForces(affectedBody, List.of(gravityForce));
-            physicsEngine.update(affectedBody, deltaTime);
-
-            trajectory.add(affectedBody.getPosition());
-        }
-
-        return trajectory;
-    }
-
     public List<BodySimulationFrame> runStaticCentralGravityFrames(
             Body affectedBody,
             Body centralBody,
