@@ -10,6 +10,7 @@ import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 public class NewtonianGravityCalculator {
 
     private final double gravitationalConstant;
+    private static final double MIN_DISTANCE = 1.0e-9;
 
     @Autowired
     public NewtonianGravityCalculator(PhysicsProperties physicsProperties) {
@@ -29,8 +30,8 @@ public class NewtonianGravityCalculator {
 
         double distance = direction.magnitude();
 
-        if (distance == 0.0) {
-            throw new IllegalArgumentException("Distance between bodies cannot be zero");
+        if (distance < MIN_DISTANCE) {
+            throw new IllegalArgumentException("Distance between bodies is too small");
         }
 
         double forceMagnitude = gravitationalConstant

@@ -6,12 +6,14 @@ import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NewtonianGravityCalculatorTest {
 
     private static final double EPSILON = 0.000001;
 
-    private final NewtonianGravityCalculator newtonianGravityCalculator = new NewtonianGravityCalculator(1.0);
+    private final NewtonianGravityCalculator newtonianGravityCalculator =
+            new NewtonianGravityCalculator(1.0);
 
     @Test
     void shouldCalculateGravitationalForceBetweenTwoBodies() {
@@ -35,6 +37,28 @@ class NewtonianGravityCalculatorTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenDistanceIsTooSmall() {
+        Body affectedBody = body(10.0, 0.0, 0.0);
+        Body attractingBody = body(20.0, 1.0e-12, 0.0);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> newtonianGravityCalculator.calculateForce(affectedBody, attractingBody)
+        );
+    }
+
+    @Test
+    void shouldCalculateForceWhenDistanceIsAboveMinimum() {
+        Body affectedBody = body(10.0, 0.0, 0.0);
+        Body attractingBody = body(20.0, 1.0e-6, 0.0);
+
+        Vector2D force = newtonianGravityCalculator.calculateForce(affectedBody, attractingBody);
+
+        assertTrue(force.x() > 0.0);
+        assertEquals(0.0, force.y(), EPSILON);
+    }
+
+    @Test
     void shouldCalculateEqualAndOppositeForces() {
         Body aBody = body(10.0, 0.0, 0.0);
         Body bBody = body(20.0, 10.0, 0.0);
@@ -44,20 +68,6 @@ class NewtonianGravityCalculatorTest {
 
         assertEquals(-forceOnA.x(), forceOnB.x(), EPSILON);
         assertEquals(-forceOnA.y(), forceOnB.y(), EPSILON);
-    }
-
-    private Body body(double mass, double positionX, double positionY) {
-        return new Body(
-                mass,
-                new Vector2D(positionX, positionY),
-                new Vector2D(0.0, 0.0),
-                new Vector2D(0.0, 0.0)
-        );
-    }
-
-    private void assertVectorEquals(Vector2D expected, Vector2D actual) {
-        assertEquals(expected.x(), actual.x(), EPSILON);
-        assertEquals(expected.y(), actual.y(), EPSILON);
     }
 
     @Test
@@ -71,5 +81,19 @@ class NewtonianGravityCalculatorTest {
                 IllegalArgumentException.class,
                 () -> new NewtonianGravityCalculator(-1.0)
         );
+    }
+
+    private Body body(double mass, double positionX, double positionY) {
+        return new Body(
+                mass,
+                new Vector2D(positionX, positionY),
+                Vector2D.ZERO,
+                Vector2D.ZERO
+        );
+    }
+
+    private void assertVectorEquals(Vector2D expected, Vector2D actual) {
+        assertEquals(expected.x(), actual.x(), EPSILON);
+        assertEquals(expected.y(), actual.y(), EPSILON);
     }
 }
