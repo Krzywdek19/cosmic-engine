@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import pl.exceptionhandled.cosmicengine.physics.NewtonianGravityCalculator;
 import pl.exceptionhandled.cosmicengine.physics.engine.PhysicsEngine;
 import pl.exceptionhandled.cosmicengine.physics.integrator.ConstantAccelerationStepIntegrator;
+import pl.exceptionhandled.cosmicengine.physics.model.Body;
+import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.BodyTrajectoryResponse;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.GravityTrajectoryRequest;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.GravityTrajectoryResponse;
@@ -11,6 +13,7 @@ import pl.exceptionhandled.cosmicengine.simulation.api.dto.SimulationBodyRequest
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.TrajectoryFrameResponse;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DRequest;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.Vector2DResponse;
+import pl.exceptionhandled.cosmicengine.simulation.command.GravityTrajectoryCommand;
 import pl.exceptionhandled.cosmicengine.simulation.factory.BodySimulationFrameFactory;
 import pl.exceptionhandled.cosmicengine.simulation.mapper.SimulationBodyMapper;
 import pl.exceptionhandled.cosmicengine.simulation.mapper.TrajectoryFrameMapper;
@@ -51,7 +54,7 @@ class SimulationServiceTest {
 
     @Test
     void shouldUseMostMassiveBodyAsStaticCentralBody() {
-        GravityTrajectoryRequest request = new GravityTrajectoryRequest(
+        GravityTrajectoryCommand command = new GravityTrajectoryCommand(
                 List.of(
                         body(10.0, 10.0, 0.0, 0.0, 1.0),
                         body(100.0, 0.0, 0.0, 0.0, 0.0),
@@ -61,7 +64,7 @@ class SimulationServiceTest {
                 5
         );
 
-        GravityTrajectoryResponse response = simulationService.simulateStaticCentralGravityTrajectory(request);
+        GravityTrajectoryResponse response = simulationService.simulateStaticCentralGravityTrajectory(command);
 
         assertEquals(GravitySimulationModel.STATIC_CENTRAL_BODY, response.model());
         assertEquals(IntegratorType.CONSTANT_ACCELERATION_STEP, response.integrator());
@@ -72,16 +75,17 @@ class SimulationServiceTest {
 
     @Test
     void shouldReturnCurvedTrajectoryForBodyAffectedByStaticCentralBody() {
-        GravityTrajectoryRequest request = new GravityTrajectoryRequest(
+        GravityTrajectoryCommand command = new GravityTrajectoryCommand(
                 List.of(
                         body(10.0, 10.0, 0.0, 0.0, 1.0),
-                        body(100.0, 0.0, 0.0, 0.0, 0.0)
+                        body(100.0, 0.0, 0.0, 0.0, 0.0),
+                        body(5.0, 15.0, 0.0, 0.0, 0.8)
                 ),
                 0.1,
                 5
         );
 
-        GravityTrajectoryResponse response = simulationService.simulateStaticCentralGravityTrajectory(request);
+        GravityTrajectoryResponse response = simulationService.simulateStaticCentralGravityTrajectory(command);
 
         BodyTrajectoryResponse planetTrajectory = response.trajectories().getFirst();
 
@@ -104,17 +108,18 @@ class SimulationServiceTest {
         assertTrue(lastPosition.y() > firstPosition.y());
     }
 
-    private SimulationBodyRequest body(
+    private Body body(
             double mass,
             double positionX,
             double positionY,
             double velocityX,
             double velocityY
     ) {
-        return new SimulationBodyRequest(
+        return new Body(
                 mass,
-                new Vector2DRequest(positionX, positionY),
-                new Vector2DRequest(velocityX, velocityY)
+                new Vector2D(positionX, positionY),
+                new Vector2D(velocityX, velocityY),
+                Vector2D.ZERO
         );
     }
 }

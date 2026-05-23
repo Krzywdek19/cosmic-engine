@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.exceptionhandled.cosmicengine.simulation.SimpleMotionSimulationService;
 import pl.exceptionhandled.cosmicengine.simulation.SimulationService;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.*;
+import pl.exceptionhandled.cosmicengine.simulation.command.GravityTrajectoryCommand;
+import pl.exceptionhandled.cosmicengine.simulation.mapper.GravityTrajectoryCommandMapper;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ public class SimulationController {
 
     private final SimpleMotionSimulationService simpleMotionSimulationService;
     private final SimulationService simulationService;
+    private final GravityTrajectoryCommandMapper gravityTrajectoryCommandMapper;
 
 
     @GetMapping("/simple-motion")
@@ -43,6 +46,8 @@ public class SimulationController {
     public GravityTrajectoryResponse simulateStaticCentralGravityTrajectory(
             @Valid @RequestBody GravityTrajectoryRequest request
     ) {
-        return simulationService.simulateStaticCentralGravityTrajectory(request);
+        GravityTrajectoryCommand command = gravityTrajectoryCommandMapper.toCommand(request);
+
+        return simulationService.simulateStaticCentralGravityTrajectory(command);
     }
 }

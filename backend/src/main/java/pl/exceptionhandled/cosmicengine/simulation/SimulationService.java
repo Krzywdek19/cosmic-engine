@@ -3,8 +3,8 @@ package pl.exceptionhandled.cosmicengine.simulation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.exceptionhandled.cosmicengine.physics.model.Body;
-import pl.exceptionhandled.cosmicengine.physics.model.Vector2D;
 import pl.exceptionhandled.cosmicengine.simulation.api.dto.*;
+import pl.exceptionhandled.cosmicengine.simulation.command.GravityTrajectoryCommand;
 import pl.exceptionhandled.cosmicengine.simulation.mapper.TrajectoryFrameMapper;
 import pl.exceptionhandled.cosmicengine.simulation.model.BodySimulationFrame;
 import pl.exceptionhandled.cosmicengine.simulation.model.GravitySimulationModel;
@@ -24,11 +24,8 @@ public class SimulationService {
     private final SimulationBodyMapper simulationBodyMapper;
     private final TrajectoryFrameMapper trajectoryFrameMapper;
 
-    public GravityTrajectoryResponse simulateStaticCentralGravityTrajectory(GravityTrajectoryRequest request) {
-        List<Body> bodies = request.bodies()
-                .stream()
-                .map(simulationBodyMapper::toBody)
-                .toList();
+    public GravityTrajectoryResponse simulateStaticCentralGravityTrajectory(GravityTrajectoryCommand command){
+        List<Body> bodies = command.bodies();
 
         int centralBodyIndex = centralBodySelectionPolicy.selectCentralBodyIndex(bodies);
 
@@ -46,8 +43,8 @@ public class SimulationService {
             List<BodySimulationFrame> simulationFrames = simulationLoop.runStaticCentralGravityFrames(
                     affectedBody,
                     centralBody,
-                    request.deltaTime(),
-                    request.steps()
+                    command.deltaTime(),
+                    command.steps()
             );
 
             List<TrajectoryFrameResponse> frames = trajectoryFrameMapper.toResponses(simulationFrames);
