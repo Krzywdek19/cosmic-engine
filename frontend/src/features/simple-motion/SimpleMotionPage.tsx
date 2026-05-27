@@ -62,7 +62,7 @@ export function SimpleMotionPage() {
 
     try {
       const responses = await Promise.all(
-        bodies.map(async (body) => {
+        bodies.map(async (body, index): Promise<BodySimulationResult> => {
           const request: SimpleMotionRequest = {
             mass: body.mass,
             position: body.position,
@@ -76,7 +76,9 @@ export function SimpleMotionPage() {
 
           return {
             id: body.id,
+            bodyIndex: index,
             name: body.name,
+            mass: body.mass,
             response,
             frames: response.frames,
           };

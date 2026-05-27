@@ -1,4 +1,8 @@
 import type {
+  GravityTrajectoryRequest,
+  GravityTrajectoryResponse,
+} from "../features/gravity/types";
+import type {
   SimpleMotionRequest,
   SimpleMotionTrajectoryResponse,
 } from "../features/simple-motion/types";
@@ -20,8 +24,52 @@ export async function runSimpleMotionTrajectory(
   );
 
   if (!response.ok) {
-    throw new Error("Failed to run simple motion simulation");
+    throw new Error(await resolveApiErrorMessage(response));
   }
 
   return response.json();
+}
+
+export async function runGravityTrajectory(
+  request: GravityTrajectoryRequest
+): Promise<GravityTrajectoryResponse> {
+  const response = await fetch(
+    `${API_BASE_URL}/simulations/gravity/trajectory`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(await resolveApiErrorMessage(response));
+  }
+
+  return response.json();
+}
+
+async function resolveApiErrorMessage(response: Response): Promise<string> {
+  try {
+    const body = (await response.json()) as {
+      message?: string;
+      fieldErrors?: Record<string, string>;
+    };
+
+    const firstFieldError = body.fieldErrors
+      ? Object.entries(body.fieldErrors)[0]
+      : undefined;
+
+    if (firstFieldError) {
+      const [field, message] = firstFieldError;
+
+      return `${field}: ${message}`;
+    }
+
+    return body.message ?? "Simulation request failed";
+  } catch {
+    return "Simulation request failed";
+  }
 }

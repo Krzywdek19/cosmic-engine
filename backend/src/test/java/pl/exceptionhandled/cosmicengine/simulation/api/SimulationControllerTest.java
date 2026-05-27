@@ -392,4 +392,45 @@ class SimulationControllerTest {
                 }
                 """.formatted(bodiesJson);
     }
+
+    @Test
+    void shouldReturnBadRequestWhenGravityTrajectoryDeltaTimeExceedsLimit() throws Exception {
+        String requestBody = """
+            {
+              "bodies": [
+                {
+                  "mass": 10000.0,
+                  "position": {
+                    "x": 0.0,
+                    "y": 0.0
+                  },
+                  "velocity": {
+                    "x": 0.0,
+                    "y": 0.0
+                  }
+                },
+                {
+                  "mass": 1.0,
+                  "position": {
+                    "x": 100.0,
+                    "y": 0.0
+                  },
+                  "velocity": {
+                    "x": 0.0,
+                    "y": 10.0
+                  }
+                }
+              ],
+              "deltaTime": 55.0,
+              "steps": 3200
+            }
+            """;
+
+        mockMvc.perform(post("/api/v1/simulations/gravity/trajectory")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.fieldErrors.deltaTime").exists());
+    }
 }

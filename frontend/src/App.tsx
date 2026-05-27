@@ -1,9 +1,9 @@
 import "./App.css";
 
-import { SimpleMotionPage } from "./features/simple-motion/SimpleMotionPage";
+import { GravityPage } from "./features/gravity/GravityPage";
 
 function App() {
-  return <SimpleMotionPage />;
+  return <GravityPage />;
 }
 
 export default App;

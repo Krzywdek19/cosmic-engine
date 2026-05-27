@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Dispatch, PointerEvent, SetStateAction } from "react";
-import type { BodySimulationResult, SimulationFrame, Vector2D } from "./types";
+import type {
+  BodySimulationResult,
+  SimulationFrame,
+  Vector2D,
+} from "./types";
 
 type SimpleMotionCanvasProps = {
   trajectories: BodySimulationResult[];
@@ -126,25 +130,18 @@ function SimpleMotionCanvasContent({
   }, [setViewTransform]);
 
   useEffect(() => {
-    if (maxFrameCount === 0) {
+    if (maxFrameCount === 0 || currentFrameIndex >= maxFrameCount - 1) {
       return;
     }
 
-    const intervalId = window.setInterval(() => {
-      setCurrentFrameIndex((previousIndex) => {
-        if (previousIndex >= maxFrameCount - 1) {
-          window.clearInterval(intervalId);
-          return previousIndex;
-        }
-
-        return previousIndex + 1;
-      });
+    const timeoutId = window.setTimeout(() => {
+      setCurrentFrameIndex(currentFrameIndex + 1);
     }, ANIMATION_INTERVAL_MS);
 
     return () => {
-      window.clearInterval(intervalId);
+      window.clearTimeout(timeoutId);
     };
-  }, [maxFrameCount]);
+  }, [maxFrameCount, currentFrameIndex]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -317,7 +314,7 @@ function SimpleMotionCanvasContent({
 
             return (
               <div
-                key={trajectory.id}
+                key={trajectory.bodyIndex}
                 className="rounded-full border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300"
               >
                 <span

@@ -17,7 +17,7 @@ public record GravityTrajectoryRequest(
 
         @NotNull
         @Positive
-        @DecimalMax("1000.0")
+        @DecimalMax("1.0")
         Double deltaTime,
 
         @NotNull
